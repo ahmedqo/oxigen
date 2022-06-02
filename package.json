@@ -1,5 +1,5 @@
 {
-    "name": "@oxigen",
+    "name": "oxigen-core",
     "version": "1.0.0",
     "description": "components base framework",
     "main": "index.js",
