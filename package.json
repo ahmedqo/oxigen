@@ -4,9 +4,14 @@
     "description": "components base framework",
     "main": "index.js",
     "type": "module",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
     "author": "ahmed qo",
-    "license": "MIT"
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ahmedqo/oxigen.git"
+    },
+    "bugs": {
+        "url": "https://github.com/ahmedqo/oxigen/issues"
+    },
+    "homepage": "https://github.com/ahmedqo/oxigen#readme"
 }
