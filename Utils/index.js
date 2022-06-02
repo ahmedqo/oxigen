@@ -1,9 +1,9 @@
 function uuid() {
-    return "zen-" + (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)).slice(0, 20);
+    return "oxi-" + (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)).slice(0, 20);
 }
 
 function isVar(str) {
-    return str.trim().startsWith("zen-") && str.trim().length === 24;
+    return str.trim().startsWith("oxi-") && str.trim().length === 24;
 }
 
 function typeOf(value) {

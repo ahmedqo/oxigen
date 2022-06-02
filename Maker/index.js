@@ -85,6 +85,8 @@ function addProp(node, prop, val) {
     let _prop = prop.split(".").reduce((a, e) => (a += `["${e}"]`), "");
     new Function(`return (node, val)=>{
             try {
+                if (!val.length && typeof ${_prop} === "boolean")
+                    val = true;
                 node${_prop} = val;
             } catch(e){
                 console.log(e);

@@ -17,7 +17,7 @@ var jsonic = function(src) {
 
 var jsonic_parser = (function() {
 
-    function storm_subclass(child, parent) {
+    function oxi_subclass(child, parent) {
         function ctor() { this.constructor = child; }
         ctor.prototype = parent.prototype;
         child.prototype = new ctor();
@@ -34,30 +34,30 @@ var jsonic_parser = (function() {
         this.name = "SyntaxError";
     }
 
-    storm_subclass(SyntaxError, Error);
+    oxi_subclass(SyntaxError, Error);
 
     function parse(input) {
         var options = arguments.length > 1 ? arguments[1] : {},
 
-            storm_FAILED = {},
+            oxi_FAILED = {},
 
-            storm_startRuleFunctions = { start: storm_parsestart },
-            storm_startRuleFunction = storm_parsestart,
+            oxi_startRuleFunctions = { start: oxi_parsestart },
+            oxi_startRuleFunction = oxi_parsestart,
 
-            storm_c0 = storm_FAILED,
-            storm_c1 = function(object) { return object; },
-            storm_c2 = function(array) { return array; },
-            storm_c3 = "{",
-            storm_c4 = { type: "literal", value: "{", description: "\"{\"" },
-            storm_c5 = "}",
-            storm_c6 = { type: "literal", value: "}", description: "\"}\"" },
-            storm_c7 = function() { return {}; },
-            storm_c8 = function(members) { return members; },
-            storm_c9 = null,
-            storm_c10 = ",",
-            storm_c11 = { type: "literal", value: ",", description: "\",\"" },
-            storm_c12 = [],
-            storm_c13 = function(head, tail) {
+            oxi_c0 = oxi_FAILED,
+            oxi_c1 = function(object) { return object; },
+            oxi_c2 = function(array) { return array; },
+            oxi_c3 = "{",
+            oxi_c4 = { type: "literal", value: "{", description: "\"{\"" },
+            oxi_c5 = "}",
+            oxi_c6 = { type: "literal", value: "}", description: "\"}\"" },
+            oxi_c7 = function() { return {}; },
+            oxi_c8 = function(members) { return members; },
+            oxi_c9 = null,
+            oxi_c10 = ",",
+            oxi_c11 = { type: "literal", value: ",", description: "\",\"" },
+            oxi_c12 = [],
+            oxi_c13 = function(head, tail) {
                 var result = {};
                 if (head) { result[head[0]] = fixNull(head[1]); }
                 for (var i = 0; i < tail.length; i++) {
@@ -65,16 +65,16 @@ var jsonic_parser = (function() {
                 }
                 return result;
             },
-            storm_c14 = ":",
-            storm_c15 = { type: "literal", value: ":", description: "\":\"" },
-            storm_c16 = function(name, value) { return [name, value]; },
-            storm_c17 = "[",
-            storm_c18 = { type: "literal", value: "[", description: "\"[\"" },
-            storm_c19 = "]",
-            storm_c20 = { type: "literal", value: "]", description: "\"]\"" },
-            storm_c21 = function() { return []; },
-            storm_c22 = function(elements) { return elements; },
-            storm_c23 = function(head, tail) {
+            oxi_c14 = ":",
+            oxi_c15 = { type: "literal", value: ":", description: "\":\"" },
+            oxi_c16 = function(name, value) { return [name, value]; },
+            oxi_c17 = "[",
+            oxi_c18 = { type: "literal", value: "[", description: "\"[\"" },
+            oxi_c19 = "]",
+            oxi_c20 = { type: "literal", value: "]", description: "\"]\"" },
+            oxi_c21 = function() { return []; },
+            oxi_c22 = function(elements) { return elements; },
+            oxi_c23 = function(head, tail) {
                 var result = [];
                 if (typeof head !== 'undefined' && head !== null) { result.push(fixNull(head)) }
                 for (var i = 0; i < tail.length; i++) {
@@ -82,116 +82,116 @@ var jsonic_parser = (function() {
                 }
                 return result;
             },
-            storm_c24 = "true",
-            storm_c25 = { type: "literal", value: "true", description: "\"true\"" },
-            storm_c26 = function() { return true; },
-            storm_c27 = "false",
-            storm_c28 = { type: "literal", value: "false", description: "\"false\"" },
-            storm_c29 = function() { return false; },
-            storm_c30 = "null",
-            storm_c31 = { type: "literal", value: "null", description: "\"null\"" },
-            storm_c32 = function() { return null_; },
-            storm_c33 = function(lit) { return lit.join('').trim() },
-            storm_c34 = { type: "other", description: "double-quote string" },
-            storm_c35 = "\"",
-            storm_c36 = { type: "literal", value: "\"", description: "\"\\\"\"" },
-            storm_c37 = function() { return ""; },
-            storm_c38 = function(chars) { return chars; },
-            storm_c39 = { type: "other", description: "single-quote string" },
-            storm_c40 = "'",
-            storm_c41 = { type: "literal", value: "'", description: "\"'\"" },
-            storm_c42 = function(chars) { return chars.join(""); },
-            storm_c43 = /^[^"\\\0-\x1F]/,
-            storm_c44 = { type: "class", value: "[^\"\\\\\\0-\\x1F]", description: "[^\"\\\\\\0-\\x1F]" },
-            storm_c45 = "\\\"",
-            storm_c46 = { type: "literal", value: "\\\"", description: "\"\\\\\\\"\"" },
-            storm_c47 = function() { return '"'; },
-            storm_c48 = "\\\\",
-            storm_c49 = { type: "literal", value: "\\\\", description: "\"\\\\\\\\\"" },
-            storm_c50 = function() { return "\\"; },
-            storm_c51 = "\\/",
-            storm_c52 = { type: "literal", value: "\\/", description: "\"\\\\/\"" },
-            storm_c53 = function() { return "/"; },
-            storm_c54 = "\\b",
-            storm_c55 = { type: "literal", value: "\\b", description: "\"\\\\b\"" },
-            storm_c56 = function() { return "\b"; },
-            storm_c57 = "\\f",
-            storm_c58 = { type: "literal", value: "\\f", description: "\"\\\\f\"" },
-            storm_c59 = function() { return "\f"; },
-            storm_c60 = "\\n",
-            storm_c61 = { type: "literal", value: "\\n", description: "\"\\\\n\"" },
-            storm_c62 = function() { return "\n"; },
-            storm_c63 = "\\r",
-            storm_c64 = { type: "literal", value: "\\r", description: "\"\\\\r\"" },
-            storm_c65 = function() { return "\r"; },
-            storm_c66 = "\\t",
-            storm_c67 = { type: "literal", value: "\\t", description: "\"\\\\t\"" },
-            storm_c68 = function() { return "\t"; },
-            storm_c69 = "\\u",
-            storm_c70 = { type: "literal", value: "\\u", description: "\"\\\\u\"" },
-            storm_c71 = function(h1, h2, h3, h4) {
+            oxi_c24 = "true",
+            oxi_c25 = { type: "literal", value: "true", description: "\"true\"" },
+            oxi_c26 = function() { return true; },
+            oxi_c27 = "false",
+            oxi_c28 = { type: "literal", value: "false", description: "\"false\"" },
+            oxi_c29 = function() { return false; },
+            oxi_c30 = "null",
+            oxi_c31 = { type: "literal", value: "null", description: "\"null\"" },
+            oxi_c32 = function() { return null_; },
+            oxi_c33 = function(lit) { return lit.join('').trim() },
+            oxi_c34 = { type: "other", description: "double-quote string" },
+            oxi_c35 = "\"",
+            oxi_c36 = { type: "literal", value: "\"", description: "\"\\\"\"" },
+            oxi_c37 = function() { return ""; },
+            oxi_c38 = function(chars) { return chars; },
+            oxi_c39 = { type: "other", description: "single-quote string" },
+            oxi_c40 = "'",
+            oxi_c41 = { type: "literal", value: "'", description: "\"'\"" },
+            oxi_c42 = function(chars) { return chars.join(""); },
+            oxi_c43 = /^[^"\\\0-\x1F]/,
+            oxi_c44 = { type: "class", value: "[^\"\\\\\\0-\\x1F]", description: "[^\"\\\\\\0-\\x1F]" },
+            oxi_c45 = "\\\"",
+            oxi_c46 = { type: "literal", value: "\\\"", description: "\"\\\\\\\"\"" },
+            oxi_c47 = function() { return '"'; },
+            oxi_c48 = "\\\\",
+            oxi_c49 = { type: "literal", value: "\\\\", description: "\"\\\\\\\\\"" },
+            oxi_c50 = function() { return "\\"; },
+            oxi_c51 = "\\/",
+            oxi_c52 = { type: "literal", value: "\\/", description: "\"\\\\/\"" },
+            oxi_c53 = function() { return "/"; },
+            oxi_c54 = "\\b",
+            oxi_c55 = { type: "literal", value: "\\b", description: "\"\\\\b\"" },
+            oxi_c56 = function() { return "\b"; },
+            oxi_c57 = "\\f",
+            oxi_c58 = { type: "literal", value: "\\f", description: "\"\\\\f\"" },
+            oxi_c59 = function() { return "\f"; },
+            oxi_c60 = "\\n",
+            oxi_c61 = { type: "literal", value: "\\n", description: "\"\\\\n\"" },
+            oxi_c62 = function() { return "\n"; },
+            oxi_c63 = "\\r",
+            oxi_c64 = { type: "literal", value: "\\r", description: "\"\\\\r\"" },
+            oxi_c65 = function() { return "\r"; },
+            oxi_c66 = "\\t",
+            oxi_c67 = { type: "literal", value: "\\t", description: "\"\\\\t\"" },
+            oxi_c68 = function() { return "\t"; },
+            oxi_c69 = "\\u",
+            oxi_c70 = { type: "literal", value: "\\u", description: "\"\\\\u\"" },
+            oxi_c71 = function(h1, h2, h3, h4) {
                 return String.fromCharCode(parseInt("0x" + h1 + h2 + h3 + h4));
             },
-            storm_c72 = /^[^'\\\0-\x1F]/,
-            storm_c73 = { type: "class", value: "[^'\\\\\\0-\\x1F]", description: "[^'\\\\\\0-\\x1F]" },
-            storm_c74 = "\\'",
-            storm_c75 = { type: "literal", value: "\\'", description: "\"\\\\'\"" },
-            storm_c76 = function() { return '\''; },
-            storm_c77 = { type: "other", description: "key" },
-            storm_c78 = /^[a-zA-Z0-9_$\-]/,
-            storm_c79 = { type: "class", value: "[a-zA-Z0-9_$\\-]", description: "[a-zA-Z0-9_$\\-]" },
-            storm_c80 = function(chars) { return chars.join('') },
-            storm_c81 = /^[^,}\]]/,
-            storm_c82 = { type: "class", value: "[^,}\\]]", description: "[^,}\\]]" },
-            storm_c83 = { type: "other", description: "number" },
-            storm_c84 = function(int_, frac, exp, suffix) { return 0 === suffix.length ? parseFloat(int_ + frac + exp) : (int_ + frac + exp + suffix.join('')).trim(); },
-            storm_c85 = function(int_, frac, suffix) { return 0 === suffix.length ? parseFloat(int_ + frac) : (int_ + frac + suffix.join('')).trim(); },
-            storm_c86 = function(int_, exp, suffix) { return 0 === suffix.length ? parseFloat(int_ + exp) : (int_ + exp + suffix.join('')).trim(); },
-            storm_c87 = function(int_, suffix) { return 0 === suffix.length ? parseFloat(int_) : (int_ + suffix.join('')).trim(); },
-            storm_c88 = function(digit19, digits) { return digit19 + digits; },
-            storm_c89 = "-",
-            storm_c90 = { type: "literal", value: "-", description: "\"-\"" },
-            storm_c91 = function(digit19, digits) { return "-" + digit19 + digits; },
-            storm_c92 = function(digit) { return "-" + digit; },
-            storm_c93 = ".",
-            storm_c94 = { type: "literal", value: ".", description: "\".\"" },
-            storm_c95 = function(digits) { return "." + digits; },
-            storm_c96 = function(e, digits) { return e + digits; },
-            storm_c97 = function(digits) { return digits.join(""); },
-            storm_c98 = /^[eE]/,
-            storm_c99 = { type: "class", value: "[eE]", description: "[eE]" },
-            storm_c100 = /^[+\-]/,
-            storm_c101 = { type: "class", value: "[+\\-]", description: "[+\\-]" },
-            storm_c102 = function(e, sign) { return e + (sign ? sign : ''); },
-            storm_c103 = /^[0-9]/,
-            storm_c104 = { type: "class", value: "[0-9]", description: "[0-9]" },
-            storm_c105 = /^[1-9]/,
-            storm_c106 = { type: "class", value: "[1-9]", description: "[1-9]" },
-            storm_c107 = /^[0-9a-fA-F]/,
-            storm_c108 = { type: "class", value: "[0-9a-fA-F]", description: "[0-9a-fA-F]" },
-            storm_c109 = { type: "other", description: "whitespace" },
-            storm_c110 = /^[ \t\n\r]/,
-            storm_c111 = { type: "class", value: "[ \\t\\n\\r]", description: "[ \\t\\n\\r]" },
+            oxi_c72 = /^[^'\\\0-\x1F]/,
+            oxi_c73 = { type: "class", value: "[^'\\\\\\0-\\x1F]", description: "[^'\\\\\\0-\\x1F]" },
+            oxi_c74 = "\\'",
+            oxi_c75 = { type: "literal", value: "\\'", description: "\"\\\\'\"" },
+            oxi_c76 = function() { return '\''; },
+            oxi_c77 = { type: "other", description: "key" },
+            oxi_c78 = /^[a-zA-Z0-9_$\-]/,
+            oxi_c79 = { type: "class", value: "[a-zA-Z0-9_$\\-]", description: "[a-zA-Z0-9_$\\-]" },
+            oxi_c80 = function(chars) { return chars.join('') },
+            oxi_c81 = /^[^,}\]]/,
+            oxi_c82 = { type: "class", value: "[^,}\\]]", description: "[^,}\\]]" },
+            oxi_c83 = { type: "other", description: "number" },
+            oxi_c84 = function(int_, frac, exp, suffix) { return 0 === suffix.length ? parseFloat(int_ + frac + exp) : (int_ + frac + exp + suffix.join('')).trim(); },
+            oxi_c85 = function(int_, frac, suffix) { return 0 === suffix.length ? parseFloat(int_ + frac) : (int_ + frac + suffix.join('')).trim(); },
+            oxi_c86 = function(int_, exp, suffix) { return 0 === suffix.length ? parseFloat(int_ + exp) : (int_ + exp + suffix.join('')).trim(); },
+            oxi_c87 = function(int_, suffix) { return 0 === suffix.length ? parseFloat(int_) : (int_ + suffix.join('')).trim(); },
+            oxi_c88 = function(digit19, digits) { return digit19 + digits; },
+            oxi_c89 = "-",
+            oxi_c90 = { type: "literal", value: "-", description: "\"-\"" },
+            oxi_c91 = function(digit19, digits) { return "-" + digit19 + digits; },
+            oxi_c92 = function(digit) { return "-" + digit; },
+            oxi_c93 = ".",
+            oxi_c94 = { type: "literal", value: ".", description: "\".\"" },
+            oxi_c95 = function(digits) { return "." + digits; },
+            oxi_c96 = function(e, digits) { return e + digits; },
+            oxi_c97 = function(digits) { return digits.join(""); },
+            oxi_c98 = /^[eE]/,
+            oxi_c99 = { type: "class", value: "[eE]", description: "[eE]" },
+            oxi_c100 = /^[+\-]/,
+            oxi_c101 = { type: "class", value: "[+\\-]", description: "[+\\-]" },
+            oxi_c102 = function(e, sign) { return e + (sign ? sign : ''); },
+            oxi_c103 = /^[0-9]/,
+            oxi_c104 = { type: "class", value: "[0-9]", description: "[0-9]" },
+            oxi_c105 = /^[1-9]/,
+            oxi_c106 = { type: "class", value: "[1-9]", description: "[1-9]" },
+            oxi_c107 = /^[0-9a-fA-F]/,
+            oxi_c108 = { type: "class", value: "[0-9a-fA-F]", description: "[0-9a-fA-F]" },
+            oxi_c109 = { type: "other", description: "whitespace" },
+            oxi_c110 = /^[ \t\n\r]/,
+            oxi_c111 = { type: "class", value: "[ \\t\\n\\r]", description: "[ \\t\\n\\r]" },
 
-            storm_currPos = 0,
-            storm_reportedPos = 0,
-            storm_cachedPos = 0,
-            storm_cachedPosDetails = { line: 1, column: 1, seenCR: false },
-            storm_maxFailPos = 0,
-            storm_maxFailExpected = [],
-            storm_silentFails = 0,
+            oxi_currPos = 0,
+            oxi_reportedPos = 0,
+            oxi_cachedPos = 0,
+            oxi_cachedPosDetails = { line: 1, column: 1, seenCR: false },
+            oxi_maxFailPos = 0,
+            oxi_maxFailExpected = [],
+            oxi_silentFails = 0,
 
-            storm_result;
+            oxi_result;
 
         if ("startRule" in options) {
-            if (!(options.startRule in storm_startRuleFunctions)) {
+            if (!(options.startRule in oxi_startRuleFunctions)) {
                 throw new Error("Can't start parsing from rule \"" + options.startRule + "\".");
             }
 
-            storm_startRuleFunction = storm_startRuleFunctions[options.startRule];
+            oxi_startRuleFunction = oxi_startRuleFunctions[options.startRule];
         }
 
-        function storm_computePosDetails(pos) {
+        function oxi_computePosDetails(pos) {
             function advance(details, startPos, endPos) {
                 var p, ch;
 
@@ -212,30 +212,30 @@ var jsonic_parser = (function() {
                 }
             }
 
-            if (storm_cachedPos !== pos) {
-                if (storm_cachedPos > pos) {
-                    storm_cachedPos = 0;
-                    storm_cachedPosDetails = { line: 1, column: 1, seenCR: false };
+            if (oxi_cachedPos !== pos) {
+                if (oxi_cachedPos > pos) {
+                    oxi_cachedPos = 0;
+                    oxi_cachedPosDetails = { line: 1, column: 1, seenCR: false };
                 }
-                advance(storm_cachedPosDetails, storm_cachedPos, pos);
-                storm_cachedPos = pos;
+                advance(oxi_cachedPosDetails, oxi_cachedPos, pos);
+                oxi_cachedPos = pos;
             }
 
-            return storm_cachedPosDetails;
+            return oxi_cachedPosDetails;
         }
 
-        function storm_fail(expected) {
-            if (storm_currPos < storm_maxFailPos) { return; }
+        function oxi_fail(expected) {
+            if (oxi_currPos < oxi_maxFailPos) { return; }
 
-            if (storm_currPos > storm_maxFailPos) {
-                storm_maxFailPos = storm_currPos;
-                storm_maxFailExpected = [];
+            if (oxi_currPos > oxi_maxFailPos) {
+                oxi_maxFailPos = oxi_currPos;
+                oxi_maxFailExpected = [];
             }
 
-            storm_maxFailExpected.push(expected);
+            oxi_maxFailExpected.push(expected);
         }
 
-        function storm_buildException(message, expected, pos) {
+        function oxi_buildException(message, expected, pos) {
             function cleanupExpected(expected) {
                 var i = 1;
 
@@ -294,7 +294,7 @@ var jsonic_parser = (function() {
                 return "Expected " + expectedDesc + " but " + foundDesc + " found.";
             }
 
-            var posDetails = storm_computePosDetails(pos),
+            var posDetails = oxi_computePosDetails(pos),
                 found = pos < input.length ? input.charAt(pos) : null;
 
             if (expected !== null) {
@@ -311,609 +311,609 @@ var jsonic_parser = (function() {
             );
         }
 
-        function storm_parsestart() {
+        function oxi_parsestart() {
             var s0, s1, s2;
 
-            s0 = storm_currPos;
-            s1 = storm_parse_();
-            if (s1 !== storm_FAILED) {
-                s2 = storm_parseobject();
-                if (s2 !== storm_FAILED) {
-                    storm_reportedPos = s0;
-                    s1 = storm_c1(s2);
+            s0 = oxi_currPos;
+            s1 = oxi_parse_();
+            if (s1 !== oxi_FAILED) {
+                s2 = oxi_parseobject();
+                if (s2 !== oxi_FAILED) {
+                    oxi_reportedPos = s0;
+                    s1 = oxi_c1(s2);
                     s0 = s1;
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
-            if (s0 === storm_FAILED) {
-                s0 = storm_currPos;
-                s1 = storm_parse_();
-                if (s1 !== storm_FAILED) {
-                    s2 = storm_parsearray();
-                    if (s2 !== storm_FAILED) {
-                        storm_reportedPos = s0;
-                        s1 = storm_c2(s2);
+            if (s0 === oxi_FAILED) {
+                s0 = oxi_currPos;
+                s1 = oxi_parse_();
+                if (s1 !== oxi_FAILED) {
+                    s2 = oxi_parsearray();
+                    if (s2 !== oxi_FAILED) {
+                        oxi_reportedPos = s0;
+                        s1 = oxi_c2(s2);
                         s0 = s1;
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             }
 
             return s0;
         }
 
-        function storm_parseobject() {
+        function oxi_parseobject() {
             var s0, s1, s2, s3, s4, s5;
 
-            s0 = storm_currPos;
-            if (input.charCodeAt(storm_currPos) === 123) {
-                s1 = storm_c3;
-                storm_currPos++;
+            s0 = oxi_currPos;
+            if (input.charCodeAt(oxi_currPos) === 123) {
+                s1 = oxi_c3;
+                oxi_currPos++;
             } else {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c4); }
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c4); }
             }
-            if (s1 !== storm_FAILED) {
-                s2 = storm_parse_();
-                if (s2 !== storm_FAILED) {
-                    if (input.charCodeAt(storm_currPos) === 125) {
-                        s3 = storm_c5;
-                        storm_currPos++;
+            if (s1 !== oxi_FAILED) {
+                s2 = oxi_parse_();
+                if (s2 !== oxi_FAILED) {
+                    if (input.charCodeAt(oxi_currPos) === 125) {
+                        s3 = oxi_c5;
+                        oxi_currPos++;
                     } else {
-                        s3 = storm_FAILED;
-                        if (storm_silentFails === 0) { storm_fail(storm_c6); }
+                        s3 = oxi_FAILED;
+                        if (oxi_silentFails === 0) { oxi_fail(oxi_c6); }
                     }
-                    if (s3 !== storm_FAILED) {
-                        s4 = storm_parse_();
-                        if (s4 !== storm_FAILED) {
-                            storm_reportedPos = s0;
-                            s1 = storm_c7();
+                    if (s3 !== oxi_FAILED) {
+                        s4 = oxi_parse_();
+                        if (s4 !== oxi_FAILED) {
+                            oxi_reportedPos = s0;
+                            s1 = oxi_c7();
                             s0 = s1;
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
-            if (s0 === storm_FAILED) {
-                s0 = storm_currPos;
-                if (input.charCodeAt(storm_currPos) === 123) {
-                    s1 = storm_c3;
-                    storm_currPos++;
+            if (s0 === oxi_FAILED) {
+                s0 = oxi_currPos;
+                if (input.charCodeAt(oxi_currPos) === 123) {
+                    s1 = oxi_c3;
+                    oxi_currPos++;
                 } else {
-                    s1 = storm_FAILED;
-                    if (storm_silentFails === 0) { storm_fail(storm_c4); }
+                    s1 = oxi_FAILED;
+                    if (oxi_silentFails === 0) { oxi_fail(oxi_c4); }
                 }
-                if (s1 !== storm_FAILED) {
-                    s2 = storm_parse_();
-                    if (s2 !== storm_FAILED) {
-                        s3 = storm_parsemembers();
-                        if (s3 !== storm_FAILED) {
-                            if (input.charCodeAt(storm_currPos) === 125) {
-                                s4 = storm_c5;
-                                storm_currPos++;
+                if (s1 !== oxi_FAILED) {
+                    s2 = oxi_parse_();
+                    if (s2 !== oxi_FAILED) {
+                        s3 = oxi_parsemembers();
+                        if (s3 !== oxi_FAILED) {
+                            if (input.charCodeAt(oxi_currPos) === 125) {
+                                s4 = oxi_c5;
+                                oxi_currPos++;
                             } else {
-                                s4 = storm_FAILED;
-                                if (storm_silentFails === 0) { storm_fail(storm_c6); }
+                                s4 = oxi_FAILED;
+                                if (oxi_silentFails === 0) { oxi_fail(oxi_c6); }
                             }
-                            if (s4 !== storm_FAILED) {
-                                s5 = storm_parse_();
-                                if (s5 !== storm_FAILED) {
-                                    storm_reportedPos = s0;
-                                    s1 = storm_c8(s3);
+                            if (s4 !== oxi_FAILED) {
+                                s5 = oxi_parse_();
+                                if (s5 !== oxi_FAILED) {
+                                    oxi_reportedPos = s0;
+                                    s1 = oxi_c8(s3);
                                     s0 = s1;
                                 } else {
-                                    storm_currPos = s0;
-                                    s0 = storm_c0;
+                                    oxi_currPos = s0;
+                                    s0 = oxi_c0;
                                 }
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             }
 
             return s0;
         }
 
-        function storm_parsemembers() {
+        function oxi_parsemembers() {
             var s0, s1, s2, s3, s4, s5, s6, s7;
 
-            s0 = storm_currPos;
-            if (input.charCodeAt(storm_currPos) === 44) {
-                s1 = storm_c10;
-                storm_currPos++;
+            s0 = oxi_currPos;
+            if (input.charCodeAt(oxi_currPos) === 44) {
+                s1 = oxi_c10;
+                oxi_currPos++;
             } else {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c11); }
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c11); }
             }
-            if (s1 === storm_FAILED) {
-                s1 = storm_c9;
+            if (s1 === oxi_FAILED) {
+                s1 = oxi_c9;
             }
-            if (s1 !== storm_FAILED) {
-                s2 = storm_parsepair();
-                if (s2 === storm_FAILED) {
-                    s2 = storm_c9;
+            if (s1 !== oxi_FAILED) {
+                s2 = oxi_parsepair();
+                if (s2 === oxi_FAILED) {
+                    s2 = oxi_c9;
                 }
-                if (s2 !== storm_FAILED) {
+                if (s2 !== oxi_FAILED) {
                     s3 = [];
-                    s4 = storm_currPos;
-                    if (input.charCodeAt(storm_currPos) === 44) {
-                        s5 = storm_c10;
-                        storm_currPos++;
+                    s4 = oxi_currPos;
+                    if (input.charCodeAt(oxi_currPos) === 44) {
+                        s5 = oxi_c10;
+                        oxi_currPos++;
                     } else {
-                        s5 = storm_FAILED;
-                        if (storm_silentFails === 0) { storm_fail(storm_c11); }
+                        s5 = oxi_FAILED;
+                        if (oxi_silentFails === 0) { oxi_fail(oxi_c11); }
                     }
-                    if (s5 !== storm_FAILED) {
-                        s6 = storm_parse_();
-                        if (s6 !== storm_FAILED) {
-                            s7 = storm_parsepair();
-                            if (s7 !== storm_FAILED) {
+                    if (s5 !== oxi_FAILED) {
+                        s6 = oxi_parse_();
+                        if (s6 !== oxi_FAILED) {
+                            s7 = oxi_parsepair();
+                            if (s7 !== oxi_FAILED) {
                                 s5 = [s5, s6, s7];
                                 s4 = s5;
                             } else {
-                                storm_currPos = s4;
-                                s4 = storm_c0;
+                                oxi_currPos = s4;
+                                s4 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s4;
-                            s4 = storm_c0;
+                            oxi_currPos = s4;
+                            s4 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s4;
-                        s4 = storm_c0;
+                        oxi_currPos = s4;
+                        s4 = oxi_c0;
                     }
-                    while (s4 !== storm_FAILED) {
+                    while (s4 !== oxi_FAILED) {
                         s3.push(s4);
-                        s4 = storm_currPos;
-                        if (input.charCodeAt(storm_currPos) === 44) {
-                            s5 = storm_c10;
-                            storm_currPos++;
+                        s4 = oxi_currPos;
+                        if (input.charCodeAt(oxi_currPos) === 44) {
+                            s5 = oxi_c10;
+                            oxi_currPos++;
                         } else {
-                            s5 = storm_FAILED;
-                            if (storm_silentFails === 0) { storm_fail(storm_c11); }
+                            s5 = oxi_FAILED;
+                            if (oxi_silentFails === 0) { oxi_fail(oxi_c11); }
                         }
-                        if (s5 !== storm_FAILED) {
-                            s6 = storm_parse_();
-                            if (s6 !== storm_FAILED) {
-                                s7 = storm_parsepair();
-                                if (s7 !== storm_FAILED) {
+                        if (s5 !== oxi_FAILED) {
+                            s6 = oxi_parse_();
+                            if (s6 !== oxi_FAILED) {
+                                s7 = oxi_parsepair();
+                                if (s7 !== oxi_FAILED) {
                                     s5 = [s5, s6, s7];
                                     s4 = s5;
                                 } else {
-                                    storm_currPos = s4;
-                                    s4 = storm_c0;
+                                    oxi_currPos = s4;
+                                    s4 = oxi_c0;
                                 }
                             } else {
-                                storm_currPos = s4;
-                                s4 = storm_c0;
+                                oxi_currPos = s4;
+                                s4 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s4;
-                            s4 = storm_c0;
+                            oxi_currPos = s4;
+                            s4 = oxi_c0;
                         }
                     }
-                    if (s3 !== storm_FAILED) {
-                        if (input.charCodeAt(storm_currPos) === 44) {
-                            s4 = storm_c10;
-                            storm_currPos++;
+                    if (s3 !== oxi_FAILED) {
+                        if (input.charCodeAt(oxi_currPos) === 44) {
+                            s4 = oxi_c10;
+                            oxi_currPos++;
                         } else {
-                            s4 = storm_FAILED;
-                            if (storm_silentFails === 0) { storm_fail(storm_c11); }
+                            s4 = oxi_FAILED;
+                            if (oxi_silentFails === 0) { oxi_fail(oxi_c11); }
                         }
-                        if (s4 === storm_FAILED) {
-                            s4 = storm_c9;
+                        if (s4 === oxi_FAILED) {
+                            s4 = oxi_c9;
                         }
-                        if (s4 !== storm_FAILED) {
-                            s5 = storm_parse_();
-                            if (s5 !== storm_FAILED) {
-                                storm_reportedPos = s0;
-                                s1 = storm_c13(s2, s3);
+                        if (s4 !== oxi_FAILED) {
+                            s5 = oxi_parse_();
+                            if (s5 !== oxi_FAILED) {
+                                oxi_reportedPos = s0;
+                                s1 = oxi_c13(s2, s3);
                                 s0 = s1;
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
 
             return s0;
         }
 
-        function storm_parsepair() {
+        function oxi_parsepair() {
             var s0, s1, s2, s3, s4, s5;
 
-            s0 = storm_currPos;
-            s1 = storm_parsekey();
-            if (s1 !== storm_FAILED) {
-                s2 = storm_parse_();
-                if (s2 !== storm_FAILED) {
-                    if (input.charCodeAt(storm_currPos) === 58) {
-                        s3 = storm_c14;
-                        storm_currPos++;
+            s0 = oxi_currPos;
+            s1 = oxi_parsekey();
+            if (s1 !== oxi_FAILED) {
+                s2 = oxi_parse_();
+                if (s2 !== oxi_FAILED) {
+                    if (input.charCodeAt(oxi_currPos) === 58) {
+                        s3 = oxi_c14;
+                        oxi_currPos++;
                     } else {
-                        s3 = storm_FAILED;
-                        if (storm_silentFails === 0) { storm_fail(storm_c15); }
+                        s3 = oxi_FAILED;
+                        if (oxi_silentFails === 0) { oxi_fail(oxi_c15); }
                     }
-                    if (s3 !== storm_FAILED) {
-                        s4 = storm_parse_();
-                        if (s4 !== storm_FAILED) {
-                            s5 = storm_parsevalue();
-                            if (s5 !== storm_FAILED) {
-                                storm_reportedPos = s0;
-                                s1 = storm_c16(s1, s5);
+                    if (s3 !== oxi_FAILED) {
+                        s4 = oxi_parse_();
+                        if (s4 !== oxi_FAILED) {
+                            s5 = oxi_parsevalue();
+                            if (s5 !== oxi_FAILED) {
+                                oxi_reportedPos = s0;
+                                s1 = oxi_c16(s1, s5);
                                 s0 = s1;
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
 
             return s0;
         }
 
-        function storm_parsearray() {
+        function oxi_parsearray() {
             var s0, s1, s2, s3, s4, s5;
 
-            s0 = storm_currPos;
-            if (input.charCodeAt(storm_currPos) === 91) {
-                s1 = storm_c17;
-                storm_currPos++;
+            s0 = oxi_currPos;
+            if (input.charCodeAt(oxi_currPos) === 91) {
+                s1 = oxi_c17;
+                oxi_currPos++;
             } else {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c18); }
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c18); }
             }
-            if (s1 !== storm_FAILED) {
-                s2 = storm_parse_();
-                if (s2 !== storm_FAILED) {
-                    if (input.charCodeAt(storm_currPos) === 93) {
-                        s3 = storm_c19;
-                        storm_currPos++;
+            if (s1 !== oxi_FAILED) {
+                s2 = oxi_parse_();
+                if (s2 !== oxi_FAILED) {
+                    if (input.charCodeAt(oxi_currPos) === 93) {
+                        s3 = oxi_c19;
+                        oxi_currPos++;
                     } else {
-                        s3 = storm_FAILED;
-                        if (storm_silentFails === 0) { storm_fail(storm_c20); }
+                        s3 = oxi_FAILED;
+                        if (oxi_silentFails === 0) { oxi_fail(oxi_c20); }
                     }
-                    if (s3 !== storm_FAILED) {
-                        s4 = storm_parse_();
-                        if (s4 !== storm_FAILED) {
-                            storm_reportedPos = s0;
-                            s1 = storm_c21();
+                    if (s3 !== oxi_FAILED) {
+                        s4 = oxi_parse_();
+                        if (s4 !== oxi_FAILED) {
+                            oxi_reportedPos = s0;
+                            s1 = oxi_c21();
                             s0 = s1;
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
-            if (s0 === storm_FAILED) {
-                s0 = storm_currPos;
-                if (input.charCodeAt(storm_currPos) === 91) {
-                    s1 = storm_c17;
-                    storm_currPos++;
+            if (s0 === oxi_FAILED) {
+                s0 = oxi_currPos;
+                if (input.charCodeAt(oxi_currPos) === 91) {
+                    s1 = oxi_c17;
+                    oxi_currPos++;
                 } else {
-                    s1 = storm_FAILED;
-                    if (storm_silentFails === 0) { storm_fail(storm_c18); }
+                    s1 = oxi_FAILED;
+                    if (oxi_silentFails === 0) { oxi_fail(oxi_c18); }
                 }
-                if (s1 !== storm_FAILED) {
-                    s2 = storm_parse_();
-                    if (s2 !== storm_FAILED) {
-                        s3 = storm_parseelements();
-                        if (s3 !== storm_FAILED) {
-                            if (input.charCodeAt(storm_currPos) === 93) {
-                                s4 = storm_c19;
-                                storm_currPos++;
+                if (s1 !== oxi_FAILED) {
+                    s2 = oxi_parse_();
+                    if (s2 !== oxi_FAILED) {
+                        s3 = oxi_parseelements();
+                        if (s3 !== oxi_FAILED) {
+                            if (input.charCodeAt(oxi_currPos) === 93) {
+                                s4 = oxi_c19;
+                                oxi_currPos++;
                             } else {
-                                s4 = storm_FAILED;
-                                if (storm_silentFails === 0) { storm_fail(storm_c20); }
+                                s4 = oxi_FAILED;
+                                if (oxi_silentFails === 0) { oxi_fail(oxi_c20); }
                             }
-                            if (s4 !== storm_FAILED) {
-                                s5 = storm_parse_();
-                                if (s5 !== storm_FAILED) {
-                                    storm_reportedPos = s0;
-                                    s1 = storm_c22(s3);
+                            if (s4 !== oxi_FAILED) {
+                                s5 = oxi_parse_();
+                                if (s5 !== oxi_FAILED) {
+                                    oxi_reportedPos = s0;
+                                    s1 = oxi_c22(s3);
                                     s0 = s1;
                                 } else {
-                                    storm_currPos = s0;
-                                    s0 = storm_c0;
+                                    oxi_currPos = s0;
+                                    s0 = oxi_c0;
                                 }
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             }
 
             return s0;
         }
 
-        function storm_parseelements() {
+        function oxi_parseelements() {
             var s0, s1, s2, s3, s4, s5, s6, s7;
 
-            s0 = storm_currPos;
-            if (input.charCodeAt(storm_currPos) === 44) {
-                s1 = storm_c10;
-                storm_currPos++;
+            s0 = oxi_currPos;
+            if (input.charCodeAt(oxi_currPos) === 44) {
+                s1 = oxi_c10;
+                oxi_currPos++;
             } else {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c11); }
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c11); }
             }
-            if (s1 === storm_FAILED) {
-                s1 = storm_c9;
+            if (s1 === oxi_FAILED) {
+                s1 = oxi_c9;
             }
-            if (s1 !== storm_FAILED) {
-                s2 = storm_parsevalue();
-                if (s2 === storm_FAILED) {
-                    s2 = storm_c9;
+            if (s1 !== oxi_FAILED) {
+                s2 = oxi_parsevalue();
+                if (s2 === oxi_FAILED) {
+                    s2 = oxi_c9;
                 }
-                if (s2 !== storm_FAILED) {
+                if (s2 !== oxi_FAILED) {
                     s3 = [];
-                    s4 = storm_currPos;
-                    if (input.charCodeAt(storm_currPos) === 44) {
-                        s5 = storm_c10;
-                        storm_currPos++;
+                    s4 = oxi_currPos;
+                    if (input.charCodeAt(oxi_currPos) === 44) {
+                        s5 = oxi_c10;
+                        oxi_currPos++;
                     } else {
-                        s5 = storm_FAILED;
-                        if (storm_silentFails === 0) { storm_fail(storm_c11); }
+                        s5 = oxi_FAILED;
+                        if (oxi_silentFails === 0) { oxi_fail(oxi_c11); }
                     }
-                    if (s5 !== storm_FAILED) {
-                        s6 = storm_parse_();
-                        if (s6 !== storm_FAILED) {
-                            s7 = storm_parsevalue();
-                            if (s7 !== storm_FAILED) {
+                    if (s5 !== oxi_FAILED) {
+                        s6 = oxi_parse_();
+                        if (s6 !== oxi_FAILED) {
+                            s7 = oxi_parsevalue();
+                            if (s7 !== oxi_FAILED) {
                                 s5 = [s5, s6, s7];
                                 s4 = s5;
                             } else {
-                                storm_currPos = s4;
-                                s4 = storm_c0;
+                                oxi_currPos = s4;
+                                s4 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s4;
-                            s4 = storm_c0;
+                            oxi_currPos = s4;
+                            s4 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s4;
-                        s4 = storm_c0;
+                        oxi_currPos = s4;
+                        s4 = oxi_c0;
                     }
-                    while (s4 !== storm_FAILED) {
+                    while (s4 !== oxi_FAILED) {
                         s3.push(s4);
-                        s4 = storm_currPos;
-                        if (input.charCodeAt(storm_currPos) === 44) {
-                            s5 = storm_c10;
-                            storm_currPos++;
+                        s4 = oxi_currPos;
+                        if (input.charCodeAt(oxi_currPos) === 44) {
+                            s5 = oxi_c10;
+                            oxi_currPos++;
                         } else {
-                            s5 = storm_FAILED;
-                            if (storm_silentFails === 0) { storm_fail(storm_c11); }
+                            s5 = oxi_FAILED;
+                            if (oxi_silentFails === 0) { oxi_fail(oxi_c11); }
                         }
-                        if (s5 !== storm_FAILED) {
-                            s6 = storm_parse_();
-                            if (s6 !== storm_FAILED) {
-                                s7 = storm_parsevalue();
-                                if (s7 !== storm_FAILED) {
+                        if (s5 !== oxi_FAILED) {
+                            s6 = oxi_parse_();
+                            if (s6 !== oxi_FAILED) {
+                                s7 = oxi_parsevalue();
+                                if (s7 !== oxi_FAILED) {
                                     s5 = [s5, s6, s7];
                                     s4 = s5;
                                 } else {
-                                    storm_currPos = s4;
-                                    s4 = storm_c0;
+                                    oxi_currPos = s4;
+                                    s4 = oxi_c0;
                                 }
                             } else {
-                                storm_currPos = s4;
-                                s4 = storm_c0;
+                                oxi_currPos = s4;
+                                s4 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s4;
-                            s4 = storm_c0;
+                            oxi_currPos = s4;
+                            s4 = oxi_c0;
                         }
                     }
-                    if (s3 !== storm_FAILED) {
-                        if (input.charCodeAt(storm_currPos) === 44) {
-                            s4 = storm_c10;
-                            storm_currPos++;
+                    if (s3 !== oxi_FAILED) {
+                        if (input.charCodeAt(oxi_currPos) === 44) {
+                            s4 = oxi_c10;
+                            oxi_currPos++;
                         } else {
-                            s4 = storm_FAILED;
-                            if (storm_silentFails === 0) { storm_fail(storm_c11); }
+                            s4 = oxi_FAILED;
+                            if (oxi_silentFails === 0) { oxi_fail(oxi_c11); }
                         }
-                        if (s4 === storm_FAILED) {
-                            s4 = storm_c9;
+                        if (s4 === oxi_FAILED) {
+                            s4 = oxi_c9;
                         }
-                        if (s4 !== storm_FAILED) {
-                            s5 = storm_parse_();
-                            if (s5 !== storm_FAILED) {
-                                storm_reportedPos = s0;
-                                s1 = storm_c23(s2, s3);
+                        if (s4 !== oxi_FAILED) {
+                            s5 = oxi_parse_();
+                            if (s5 !== oxi_FAILED) {
+                                oxi_reportedPos = s0;
+                                s1 = oxi_c23(s2, s3);
                                 s0 = s1;
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
 
             return s0;
         }
 
-        function storm_parsevalue() {
+        function oxi_parsevalue() {
             var s0, s1, s2;
 
-            s0 = storm_parsestring();
-            if (s0 === storm_FAILED) {
-                s0 = storm_parsesingle();
-                if (s0 === storm_FAILED) {
-                    s0 = storm_parseobject();
-                    if (s0 === storm_FAILED) {
-                        s0 = storm_parsearray();
-                        if (s0 === storm_FAILED) {
-                            s0 = storm_currPos;
-                            if (input.substr(storm_currPos, 4) === storm_c24) {
-                                s1 = storm_c24;
-                                storm_currPos += 4;
+            s0 = oxi_parsestring();
+            if (s0 === oxi_FAILED) {
+                s0 = oxi_parsesingle();
+                if (s0 === oxi_FAILED) {
+                    s0 = oxi_parseobject();
+                    if (s0 === oxi_FAILED) {
+                        s0 = oxi_parsearray();
+                        if (s0 === oxi_FAILED) {
+                            s0 = oxi_currPos;
+                            if (input.substr(oxi_currPos, 4) === oxi_c24) {
+                                s1 = oxi_c24;
+                                oxi_currPos += 4;
                             } else {
-                                s1 = storm_FAILED;
-                                if (storm_silentFails === 0) { storm_fail(storm_c25); }
+                                s1 = oxi_FAILED;
+                                if (oxi_silentFails === 0) { oxi_fail(oxi_c25); }
                             }
-                            if (s1 !== storm_FAILED) {
-                                s2 = storm_parse_();
-                                if (s2 !== storm_FAILED) {
-                                    storm_reportedPos = s0;
-                                    s1 = storm_c26();
+                            if (s1 !== oxi_FAILED) {
+                                s2 = oxi_parse_();
+                                if (s2 !== oxi_FAILED) {
+                                    oxi_reportedPos = s0;
+                                    s1 = oxi_c26();
                                     s0 = s1;
                                 } else {
-                                    storm_currPos = s0;
-                                    s0 = storm_c0;
+                                    oxi_currPos = s0;
+                                    s0 = oxi_c0;
                                 }
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
-                            if (s0 === storm_FAILED) {
-                                s0 = storm_currPos;
-                                if (input.substr(storm_currPos, 5) === storm_c27) {
-                                    s1 = storm_c27;
-                                    storm_currPos += 5;
+                            if (s0 === oxi_FAILED) {
+                                s0 = oxi_currPos;
+                                if (input.substr(oxi_currPos, 5) === oxi_c27) {
+                                    s1 = oxi_c27;
+                                    oxi_currPos += 5;
                                 } else {
-                                    s1 = storm_FAILED;
-                                    if (storm_silentFails === 0) { storm_fail(storm_c28); }
+                                    s1 = oxi_FAILED;
+                                    if (oxi_silentFails === 0) { oxi_fail(oxi_c28); }
                                 }
-                                if (s1 !== storm_FAILED) {
-                                    s2 = storm_parse_();
-                                    if (s2 !== storm_FAILED) {
-                                        storm_reportedPos = s0;
-                                        s1 = storm_c29();
+                                if (s1 !== oxi_FAILED) {
+                                    s2 = oxi_parse_();
+                                    if (s2 !== oxi_FAILED) {
+                                        oxi_reportedPos = s0;
+                                        s1 = oxi_c29();
                                         s0 = s1;
                                     } else {
-                                        storm_currPos = s0;
-                                        s0 = storm_c0;
+                                        oxi_currPos = s0;
+                                        s0 = oxi_c0;
                                     }
                                 } else {
-                                    storm_currPos = s0;
-                                    s0 = storm_c0;
+                                    oxi_currPos = s0;
+                                    s0 = oxi_c0;
                                 }
-                                if (s0 === storm_FAILED) {
-                                    s0 = storm_currPos;
-                                    if (input.substr(storm_currPos, 4) === storm_c30) {
-                                        s1 = storm_c30;
-                                        storm_currPos += 4;
+                                if (s0 === oxi_FAILED) {
+                                    s0 = oxi_currPos;
+                                    if (input.substr(oxi_currPos, 4) === oxi_c30) {
+                                        s1 = oxi_c30;
+                                        oxi_currPos += 4;
                                     } else {
-                                        s1 = storm_FAILED;
-                                        if (storm_silentFails === 0) { storm_fail(storm_c31); }
+                                        s1 = oxi_FAILED;
+                                        if (oxi_silentFails === 0) { oxi_fail(oxi_c31); }
                                     }
-                                    if (s1 !== storm_FAILED) {
-                                        s2 = storm_parse_();
-                                        if (s2 !== storm_FAILED) {
-                                            storm_reportedPos = s0;
-                                            s1 = storm_c32();
+                                    if (s1 !== oxi_FAILED) {
+                                        s2 = oxi_parse_();
+                                        if (s2 !== oxi_FAILED) {
+                                            oxi_reportedPos = s0;
+                                            s1 = oxi_c32();
                                             s0 = s1;
                                         } else {
-                                            storm_currPos = s0;
-                                            s0 = storm_c0;
+                                            oxi_currPos = s0;
+                                            s0 = oxi_c0;
                                         }
                                     } else {
-                                        storm_currPos = s0;
-                                        s0 = storm_c0;
+                                        oxi_currPos = s0;
+                                        s0 = oxi_c0;
                                     }
-                                    if (s0 === storm_FAILED) {
-                                        s0 = storm_parsenumber();
-                                        if (s0 === storm_FAILED) {
-                                            s0 = storm_currPos;
-                                            s1 = storm_parseliteral();
-                                            if (s1 !== storm_FAILED) {
-                                                storm_reportedPos = s0;
-                                                s1 = storm_c33(s1);
+                                    if (s0 === oxi_FAILED) {
+                                        s0 = oxi_parsenumber();
+                                        if (s0 === oxi_FAILED) {
+                                            s0 = oxi_currPos;
+                                            s1 = oxi_parseliteral();
+                                            if (s1 !== oxi_FAILED) {
+                                                oxi_reportedPos = s0;
+                                                s1 = oxi_c33(s1);
                                             }
                                             s0 = s1;
                                         }
@@ -928,369 +928,369 @@ var jsonic_parser = (function() {
             return s0;
         }
 
-        function storm_parsestring() {
+        function oxi_parsestring() {
             var s0, s1, s2, s3, s4;
 
-            storm_silentFails++;
-            s0 = storm_currPos;
-            if (input.charCodeAt(storm_currPos) === 34) {
-                s1 = storm_c35;
-                storm_currPos++;
+            oxi_silentFails++;
+            s0 = oxi_currPos;
+            if (input.charCodeAt(oxi_currPos) === 34) {
+                s1 = oxi_c35;
+                oxi_currPos++;
             } else {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c36); }
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c36); }
             }
-            if (s1 !== storm_FAILED) {
-                if (input.charCodeAt(storm_currPos) === 34) {
-                    s2 = storm_c35;
-                    storm_currPos++;
+            if (s1 !== oxi_FAILED) {
+                if (input.charCodeAt(oxi_currPos) === 34) {
+                    s2 = oxi_c35;
+                    oxi_currPos++;
                 } else {
-                    s2 = storm_FAILED;
-                    if (storm_silentFails === 0) { storm_fail(storm_c36); }
+                    s2 = oxi_FAILED;
+                    if (oxi_silentFails === 0) { oxi_fail(oxi_c36); }
                 }
-                if (s2 !== storm_FAILED) {
-                    s3 = storm_parse_();
-                    if (s3 !== storm_FAILED) {
-                        storm_reportedPos = s0;
-                        s1 = storm_c37();
+                if (s2 !== oxi_FAILED) {
+                    s3 = oxi_parse_();
+                    if (s3 !== oxi_FAILED) {
+                        oxi_reportedPos = s0;
+                        s1 = oxi_c37();
                         s0 = s1;
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
-            if (s0 === storm_FAILED) {
-                s0 = storm_currPos;
-                if (input.charCodeAt(storm_currPos) === 34) {
-                    s1 = storm_c35;
-                    storm_currPos++;
+            if (s0 === oxi_FAILED) {
+                s0 = oxi_currPos;
+                if (input.charCodeAt(oxi_currPos) === 34) {
+                    s1 = oxi_c35;
+                    oxi_currPos++;
                 } else {
-                    s1 = storm_FAILED;
-                    if (storm_silentFails === 0) { storm_fail(storm_c36); }
+                    s1 = oxi_FAILED;
+                    if (oxi_silentFails === 0) { oxi_fail(oxi_c36); }
                 }
-                if (s1 !== storm_FAILED) {
-                    s2 = storm_parsechars();
-                    if (s2 !== storm_FAILED) {
-                        if (input.charCodeAt(storm_currPos) === 34) {
-                            s3 = storm_c35;
-                            storm_currPos++;
+                if (s1 !== oxi_FAILED) {
+                    s2 = oxi_parsechars();
+                    if (s2 !== oxi_FAILED) {
+                        if (input.charCodeAt(oxi_currPos) === 34) {
+                            s3 = oxi_c35;
+                            oxi_currPos++;
                         } else {
-                            s3 = storm_FAILED;
-                            if (storm_silentFails === 0) { storm_fail(storm_c36); }
+                            s3 = oxi_FAILED;
+                            if (oxi_silentFails === 0) { oxi_fail(oxi_c36); }
                         }
-                        if (s3 !== storm_FAILED) {
-                            s4 = storm_parse_();
-                            if (s4 !== storm_FAILED) {
-                                storm_reportedPos = s0;
-                                s1 = storm_c38(s2);
+                        if (s3 !== oxi_FAILED) {
+                            s4 = oxi_parse_();
+                            if (s4 !== oxi_FAILED) {
+                                oxi_reportedPos = s0;
+                                s1 = oxi_c38(s2);
                                 s0 = s1;
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             }
-            storm_silentFails--;
-            if (s0 === storm_FAILED) {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c34); }
+            oxi_silentFails--;
+            if (s0 === oxi_FAILED) {
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c34); }
             }
 
             return s0;
         }
 
-        function storm_parsesingle() {
+        function oxi_parsesingle() {
             var s0, s1, s2, s3, s4;
 
-            storm_silentFails++;
-            s0 = storm_currPos;
-            if (input.charCodeAt(storm_currPos) === 39) {
-                s1 = storm_c40;
-                storm_currPos++;
+            oxi_silentFails++;
+            s0 = oxi_currPos;
+            if (input.charCodeAt(oxi_currPos) === 39) {
+                s1 = oxi_c40;
+                oxi_currPos++;
             } else {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c41); }
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c41); }
             }
-            if (s1 !== storm_FAILED) {
-                if (input.charCodeAt(storm_currPos) === 39) {
-                    s2 = storm_c40;
-                    storm_currPos++;
+            if (s1 !== oxi_FAILED) {
+                if (input.charCodeAt(oxi_currPos) === 39) {
+                    s2 = oxi_c40;
+                    oxi_currPos++;
                 } else {
-                    s2 = storm_FAILED;
-                    if (storm_silentFails === 0) { storm_fail(storm_c41); }
+                    s2 = oxi_FAILED;
+                    if (oxi_silentFails === 0) { oxi_fail(oxi_c41); }
                 }
-                if (s2 !== storm_FAILED) {
-                    s3 = storm_parse_();
-                    if (s3 !== storm_FAILED) {
-                        storm_reportedPos = s0;
-                        s1 = storm_c37();
+                if (s2 !== oxi_FAILED) {
+                    s3 = oxi_parse_();
+                    if (s3 !== oxi_FAILED) {
+                        oxi_reportedPos = s0;
+                        s1 = oxi_c37();
                         s0 = s1;
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
-            if (s0 === storm_FAILED) {
-                s0 = storm_currPos;
-                if (input.charCodeAt(storm_currPos) === 39) {
-                    s1 = storm_c40;
-                    storm_currPos++;
+            if (s0 === oxi_FAILED) {
+                s0 = oxi_currPos;
+                if (input.charCodeAt(oxi_currPos) === 39) {
+                    s1 = oxi_c40;
+                    oxi_currPos++;
                 } else {
-                    s1 = storm_FAILED;
-                    if (storm_silentFails === 0) { storm_fail(storm_c41); }
+                    s1 = oxi_FAILED;
+                    if (oxi_silentFails === 0) { oxi_fail(oxi_c41); }
                 }
-                if (s1 !== storm_FAILED) {
-                    s2 = storm_parseschars();
-                    if (s2 !== storm_FAILED) {
-                        if (input.charCodeAt(storm_currPos) === 39) {
-                            s3 = storm_c40;
-                            storm_currPos++;
+                if (s1 !== oxi_FAILED) {
+                    s2 = oxi_parseschars();
+                    if (s2 !== oxi_FAILED) {
+                        if (input.charCodeAt(oxi_currPos) === 39) {
+                            s3 = oxi_c40;
+                            oxi_currPos++;
                         } else {
-                            s3 = storm_FAILED;
-                            if (storm_silentFails === 0) { storm_fail(storm_c41); }
+                            s3 = oxi_FAILED;
+                            if (oxi_silentFails === 0) { oxi_fail(oxi_c41); }
                         }
-                        if (s3 !== storm_FAILED) {
-                            s4 = storm_parse_();
-                            if (s4 !== storm_FAILED) {
-                                storm_reportedPos = s0;
-                                s1 = storm_c38(s2);
+                        if (s3 !== oxi_FAILED) {
+                            s4 = oxi_parse_();
+                            if (s4 !== oxi_FAILED) {
+                                oxi_reportedPos = s0;
+                                s1 = oxi_c38(s2);
                                 s0 = s1;
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             }
-            storm_silentFails--;
-            if (s0 === storm_FAILED) {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c39); }
+            oxi_silentFails--;
+            if (s0 === oxi_FAILED) {
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c39); }
             }
 
             return s0;
         }
 
-        function storm_parsechars() {
+        function oxi_parsechars() {
             var s0, s1, s2;
 
-            s0 = storm_currPos;
+            s0 = oxi_currPos;
             s1 = [];
-            s2 = storm_parsechar();
-            if (s2 !== storm_FAILED) {
-                while (s2 !== storm_FAILED) {
+            s2 = oxi_parsechar();
+            if (s2 !== oxi_FAILED) {
+                while (s2 !== oxi_FAILED) {
                     s1.push(s2);
-                    s2 = storm_parsechar();
+                    s2 = oxi_parsechar();
                 }
             } else {
-                s1 = storm_c0;
+                s1 = oxi_c0;
             }
-            if (s1 !== storm_FAILED) {
-                storm_reportedPos = s0;
-                s1 = storm_c42(s1);
+            if (s1 !== oxi_FAILED) {
+                oxi_reportedPos = s0;
+                s1 = oxi_c42(s1);
             }
             s0 = s1;
 
             return s0;
         }
 
-        function storm_parsechar() {
+        function oxi_parsechar() {
             var s0, s1, s2, s3, s4, s5;
 
-            if (storm_c43.test(input.charAt(storm_currPos))) {
-                s0 = input.charAt(storm_currPos);
-                storm_currPos++;
+            if (oxi_c43.test(input.charAt(oxi_currPos))) {
+                s0 = input.charAt(oxi_currPos);
+                oxi_currPos++;
             } else {
-                s0 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c44); }
+                s0 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c44); }
             }
-            if (s0 === storm_FAILED) {
-                s0 = storm_currPos;
-                if (input.substr(storm_currPos, 2) === storm_c45) {
-                    s1 = storm_c45;
-                    storm_currPos += 2;
+            if (s0 === oxi_FAILED) {
+                s0 = oxi_currPos;
+                if (input.substr(oxi_currPos, 2) === oxi_c45) {
+                    s1 = oxi_c45;
+                    oxi_currPos += 2;
                 } else {
-                    s1 = storm_FAILED;
-                    if (storm_silentFails === 0) { storm_fail(storm_c46); }
+                    s1 = oxi_FAILED;
+                    if (oxi_silentFails === 0) { oxi_fail(oxi_c46); }
                 }
-                if (s1 !== storm_FAILED) {
-                    storm_reportedPos = s0;
-                    s1 = storm_c47();
+                if (s1 !== oxi_FAILED) {
+                    oxi_reportedPos = s0;
+                    s1 = oxi_c47();
                 }
                 s0 = s1;
-                if (s0 === storm_FAILED) {
-                    s0 = storm_currPos;
-                    if (input.substr(storm_currPos, 2) === storm_c48) {
-                        s1 = storm_c48;
-                        storm_currPos += 2;
+                if (s0 === oxi_FAILED) {
+                    s0 = oxi_currPos;
+                    if (input.substr(oxi_currPos, 2) === oxi_c48) {
+                        s1 = oxi_c48;
+                        oxi_currPos += 2;
                     } else {
-                        s1 = storm_FAILED;
-                        if (storm_silentFails === 0) { storm_fail(storm_c49); }
+                        s1 = oxi_FAILED;
+                        if (oxi_silentFails === 0) { oxi_fail(oxi_c49); }
                     }
-                    if (s1 !== storm_FAILED) {
-                        storm_reportedPos = s0;
-                        s1 = storm_c50();
+                    if (s1 !== oxi_FAILED) {
+                        oxi_reportedPos = s0;
+                        s1 = oxi_c50();
                     }
                     s0 = s1;
-                    if (s0 === storm_FAILED) {
-                        s0 = storm_currPos;
-                        if (input.substr(storm_currPos, 2) === storm_c51) {
-                            s1 = storm_c51;
-                            storm_currPos += 2;
+                    if (s0 === oxi_FAILED) {
+                        s0 = oxi_currPos;
+                        if (input.substr(oxi_currPos, 2) === oxi_c51) {
+                            s1 = oxi_c51;
+                            oxi_currPos += 2;
                         } else {
-                            s1 = storm_FAILED;
-                            if (storm_silentFails === 0) { storm_fail(storm_c52); }
+                            s1 = oxi_FAILED;
+                            if (oxi_silentFails === 0) { oxi_fail(oxi_c52); }
                         }
-                        if (s1 !== storm_FAILED) {
-                            storm_reportedPos = s0;
-                            s1 = storm_c53();
+                        if (s1 !== oxi_FAILED) {
+                            oxi_reportedPos = s0;
+                            s1 = oxi_c53();
                         }
                         s0 = s1;
-                        if (s0 === storm_FAILED) {
-                            s0 = storm_currPos;
-                            if (input.substr(storm_currPos, 2) === storm_c54) {
-                                s1 = storm_c54;
-                                storm_currPos += 2;
+                        if (s0 === oxi_FAILED) {
+                            s0 = oxi_currPos;
+                            if (input.substr(oxi_currPos, 2) === oxi_c54) {
+                                s1 = oxi_c54;
+                                oxi_currPos += 2;
                             } else {
-                                s1 = storm_FAILED;
-                                if (storm_silentFails === 0) { storm_fail(storm_c55); }
+                                s1 = oxi_FAILED;
+                                if (oxi_silentFails === 0) { oxi_fail(oxi_c55); }
                             }
-                            if (s1 !== storm_FAILED) {
-                                storm_reportedPos = s0;
-                                s1 = storm_c56();
+                            if (s1 !== oxi_FAILED) {
+                                oxi_reportedPos = s0;
+                                s1 = oxi_c56();
                             }
                             s0 = s1;
-                            if (s0 === storm_FAILED) {
-                                s0 = storm_currPos;
-                                if (input.substr(storm_currPos, 2) === storm_c57) {
-                                    s1 = storm_c57;
-                                    storm_currPos += 2;
+                            if (s0 === oxi_FAILED) {
+                                s0 = oxi_currPos;
+                                if (input.substr(oxi_currPos, 2) === oxi_c57) {
+                                    s1 = oxi_c57;
+                                    oxi_currPos += 2;
                                 } else {
-                                    s1 = storm_FAILED;
-                                    if (storm_silentFails === 0) { storm_fail(storm_c58); }
+                                    s1 = oxi_FAILED;
+                                    if (oxi_silentFails === 0) { oxi_fail(oxi_c58); }
                                 }
-                                if (s1 !== storm_FAILED) {
-                                    storm_reportedPos = s0;
-                                    s1 = storm_c59();
+                                if (s1 !== oxi_FAILED) {
+                                    oxi_reportedPos = s0;
+                                    s1 = oxi_c59();
                                 }
                                 s0 = s1;
-                                if (s0 === storm_FAILED) {
-                                    s0 = storm_currPos;
-                                    if (input.substr(storm_currPos, 2) === storm_c60) {
-                                        s1 = storm_c60;
-                                        storm_currPos += 2;
+                                if (s0 === oxi_FAILED) {
+                                    s0 = oxi_currPos;
+                                    if (input.substr(oxi_currPos, 2) === oxi_c60) {
+                                        s1 = oxi_c60;
+                                        oxi_currPos += 2;
                                     } else {
-                                        s1 = storm_FAILED;
-                                        if (storm_silentFails === 0) { storm_fail(storm_c61); }
+                                        s1 = oxi_FAILED;
+                                        if (oxi_silentFails === 0) { oxi_fail(oxi_c61); }
                                     }
-                                    if (s1 !== storm_FAILED) {
-                                        storm_reportedPos = s0;
-                                        s1 = storm_c62();
+                                    if (s1 !== oxi_FAILED) {
+                                        oxi_reportedPos = s0;
+                                        s1 = oxi_c62();
                                     }
                                     s0 = s1;
-                                    if (s0 === storm_FAILED) {
-                                        s0 = storm_currPos;
-                                        if (input.substr(storm_currPos, 2) === storm_c63) {
-                                            s1 = storm_c63;
-                                            storm_currPos += 2;
+                                    if (s0 === oxi_FAILED) {
+                                        s0 = oxi_currPos;
+                                        if (input.substr(oxi_currPos, 2) === oxi_c63) {
+                                            s1 = oxi_c63;
+                                            oxi_currPos += 2;
                                         } else {
-                                            s1 = storm_FAILED;
-                                            if (storm_silentFails === 0) { storm_fail(storm_c64); }
+                                            s1 = oxi_FAILED;
+                                            if (oxi_silentFails === 0) { oxi_fail(oxi_c64); }
                                         }
-                                        if (s1 !== storm_FAILED) {
-                                            storm_reportedPos = s0;
-                                            s1 = storm_c65();
+                                        if (s1 !== oxi_FAILED) {
+                                            oxi_reportedPos = s0;
+                                            s1 = oxi_c65();
                                         }
                                         s0 = s1;
-                                        if (s0 === storm_FAILED) {
-                                            s0 = storm_currPos;
-                                            if (input.substr(storm_currPos, 2) === storm_c66) {
-                                                s1 = storm_c66;
-                                                storm_currPos += 2;
+                                        if (s0 === oxi_FAILED) {
+                                            s0 = oxi_currPos;
+                                            if (input.substr(oxi_currPos, 2) === oxi_c66) {
+                                                s1 = oxi_c66;
+                                                oxi_currPos += 2;
                                             } else {
-                                                s1 = storm_FAILED;
-                                                if (storm_silentFails === 0) { storm_fail(storm_c67); }
+                                                s1 = oxi_FAILED;
+                                                if (oxi_silentFails === 0) { oxi_fail(oxi_c67); }
                                             }
-                                            if (s1 !== storm_FAILED) {
-                                                storm_reportedPos = s0;
-                                                s1 = storm_c68();
+                                            if (s1 !== oxi_FAILED) {
+                                                oxi_reportedPos = s0;
+                                                s1 = oxi_c68();
                                             }
                                             s0 = s1;
-                                            if (s0 === storm_FAILED) {
-                                                s0 = storm_currPos;
-                                                if (input.substr(storm_currPos, 2) === storm_c69) {
-                                                    s1 = storm_c69;
-                                                    storm_currPos += 2;
+                                            if (s0 === oxi_FAILED) {
+                                                s0 = oxi_currPos;
+                                                if (input.substr(oxi_currPos, 2) === oxi_c69) {
+                                                    s1 = oxi_c69;
+                                                    oxi_currPos += 2;
                                                 } else {
-                                                    s1 = storm_FAILED;
-                                                    if (storm_silentFails === 0) { storm_fail(storm_c70); }
+                                                    s1 = oxi_FAILED;
+                                                    if (oxi_silentFails === 0) { oxi_fail(oxi_c70); }
                                                 }
-                                                if (s1 !== storm_FAILED) {
-                                                    s2 = storm_parsehexDigit();
-                                                    if (s2 !== storm_FAILED) {
-                                                        s3 = storm_parsehexDigit();
-                                                        if (s3 !== storm_FAILED) {
-                                                            s4 = storm_parsehexDigit();
-                                                            if (s4 !== storm_FAILED) {
-                                                                s5 = storm_parsehexDigit();
-                                                                if (s5 !== storm_FAILED) {
-                                                                    storm_reportedPos = s0;
-                                                                    s1 = storm_c71(s2, s3, s4, s5);
+                                                if (s1 !== oxi_FAILED) {
+                                                    s2 = oxi_parsehexDigit();
+                                                    if (s2 !== oxi_FAILED) {
+                                                        s3 = oxi_parsehexDigit();
+                                                        if (s3 !== oxi_FAILED) {
+                                                            s4 = oxi_parsehexDigit();
+                                                            if (s4 !== oxi_FAILED) {
+                                                                s5 = oxi_parsehexDigit();
+                                                                if (s5 !== oxi_FAILED) {
+                                                                    oxi_reportedPos = s0;
+                                                                    s1 = oxi_c71(s2, s3, s4, s5);
                                                                     s0 = s1;
                                                                 } else {
-                                                                    storm_currPos = s0;
-                                                                    s0 = storm_c0;
+                                                                    oxi_currPos = s0;
+                                                                    s0 = oxi_c0;
                                                                 }
                                                             } else {
-                                                                storm_currPos = s0;
-                                                                s0 = storm_c0;
+                                                                oxi_currPos = s0;
+                                                                s0 = oxi_c0;
                                                             }
                                                         } else {
-                                                            storm_currPos = s0;
-                                                            s0 = storm_c0;
+                                                            oxi_currPos = s0;
+                                                            s0 = oxi_c0;
                                                         }
                                                     } else {
-                                                        storm_currPos = s0;
-                                                        s0 = storm_c0;
+                                                        oxi_currPos = s0;
+                                                        s0 = oxi_c0;
                                                     }
                                                 } else {
-                                                    storm_currPos = s0;
-                                                    s0 = storm_c0;
+                                                    oxi_currPos = s0;
+                                                    s0 = oxi_c0;
                                                 }
                                             }
                                         }
@@ -1305,191 +1305,191 @@ var jsonic_parser = (function() {
             return s0;
         }
 
-        function storm_parseschars() {
+        function oxi_parseschars() {
             var s0, s1, s2;
 
-            s0 = storm_currPos;
+            s0 = oxi_currPos;
             s1 = [];
-            s2 = storm_parseschar();
-            if (s2 !== storm_FAILED) {
-                while (s2 !== storm_FAILED) {
+            s2 = oxi_parseschar();
+            if (s2 !== oxi_FAILED) {
+                while (s2 !== oxi_FAILED) {
                     s1.push(s2);
-                    s2 = storm_parseschar();
+                    s2 = oxi_parseschar();
                 }
             } else {
-                s1 = storm_c0;
+                s1 = oxi_c0;
             }
-            if (s1 !== storm_FAILED) {
-                storm_reportedPos = s0;
-                s1 = storm_c42(s1);
+            if (s1 !== oxi_FAILED) {
+                oxi_reportedPos = s0;
+                s1 = oxi_c42(s1);
             }
             s0 = s1;
 
             return s0;
         }
 
-        function storm_parseschar() {
+        function oxi_parseschar() {
             var s0, s1, s2, s3, s4, s5;
 
-            if (storm_c72.test(input.charAt(storm_currPos))) {
-                s0 = input.charAt(storm_currPos);
-                storm_currPos++;
+            if (oxi_c72.test(input.charAt(oxi_currPos))) {
+                s0 = input.charAt(oxi_currPos);
+                oxi_currPos++;
             } else {
-                s0 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c73); }
+                s0 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c73); }
             }
-            if (s0 === storm_FAILED) {
-                s0 = storm_currPos;
-                if (input.substr(storm_currPos, 2) === storm_c74) {
-                    s1 = storm_c74;
-                    storm_currPos += 2;
+            if (s0 === oxi_FAILED) {
+                s0 = oxi_currPos;
+                if (input.substr(oxi_currPos, 2) === oxi_c74) {
+                    s1 = oxi_c74;
+                    oxi_currPos += 2;
                 } else {
-                    s1 = storm_FAILED;
-                    if (storm_silentFails === 0) { storm_fail(storm_c75); }
+                    s1 = oxi_FAILED;
+                    if (oxi_silentFails === 0) { oxi_fail(oxi_c75); }
                 }
-                if (s1 !== storm_FAILED) {
-                    storm_reportedPos = s0;
-                    s1 = storm_c76();
+                if (s1 !== oxi_FAILED) {
+                    oxi_reportedPos = s0;
+                    s1 = oxi_c76();
                 }
                 s0 = s1;
-                if (s0 === storm_FAILED) {
-                    s0 = storm_currPos;
-                    if (input.substr(storm_currPos, 2) === storm_c48) {
-                        s1 = storm_c48;
-                        storm_currPos += 2;
+                if (s0 === oxi_FAILED) {
+                    s0 = oxi_currPos;
+                    if (input.substr(oxi_currPos, 2) === oxi_c48) {
+                        s1 = oxi_c48;
+                        oxi_currPos += 2;
                     } else {
-                        s1 = storm_FAILED;
-                        if (storm_silentFails === 0) { storm_fail(storm_c49); }
+                        s1 = oxi_FAILED;
+                        if (oxi_silentFails === 0) { oxi_fail(oxi_c49); }
                     }
-                    if (s1 !== storm_FAILED) {
-                        storm_reportedPos = s0;
-                        s1 = storm_c50();
+                    if (s1 !== oxi_FAILED) {
+                        oxi_reportedPos = s0;
+                        s1 = oxi_c50();
                     }
                     s0 = s1;
-                    if (s0 === storm_FAILED) {
-                        s0 = storm_currPos;
-                        if (input.substr(storm_currPos, 2) === storm_c51) {
-                            s1 = storm_c51;
-                            storm_currPos += 2;
+                    if (s0 === oxi_FAILED) {
+                        s0 = oxi_currPos;
+                        if (input.substr(oxi_currPos, 2) === oxi_c51) {
+                            s1 = oxi_c51;
+                            oxi_currPos += 2;
                         } else {
-                            s1 = storm_FAILED;
-                            if (storm_silentFails === 0) { storm_fail(storm_c52); }
+                            s1 = oxi_FAILED;
+                            if (oxi_silentFails === 0) { oxi_fail(oxi_c52); }
                         }
-                        if (s1 !== storm_FAILED) {
-                            storm_reportedPos = s0;
-                            s1 = storm_c53();
+                        if (s1 !== oxi_FAILED) {
+                            oxi_reportedPos = s0;
+                            s1 = oxi_c53();
                         }
                         s0 = s1;
-                        if (s0 === storm_FAILED) {
-                            s0 = storm_currPos;
-                            if (input.substr(storm_currPos, 2) === storm_c54) {
-                                s1 = storm_c54;
-                                storm_currPos += 2;
+                        if (s0 === oxi_FAILED) {
+                            s0 = oxi_currPos;
+                            if (input.substr(oxi_currPos, 2) === oxi_c54) {
+                                s1 = oxi_c54;
+                                oxi_currPos += 2;
                             } else {
-                                s1 = storm_FAILED;
-                                if (storm_silentFails === 0) { storm_fail(storm_c55); }
+                                s1 = oxi_FAILED;
+                                if (oxi_silentFails === 0) { oxi_fail(oxi_c55); }
                             }
-                            if (s1 !== storm_FAILED) {
-                                storm_reportedPos = s0;
-                                s1 = storm_c56();
+                            if (s1 !== oxi_FAILED) {
+                                oxi_reportedPos = s0;
+                                s1 = oxi_c56();
                             }
                             s0 = s1;
-                            if (s0 === storm_FAILED) {
-                                s0 = storm_currPos;
-                                if (input.substr(storm_currPos, 2) === storm_c57) {
-                                    s1 = storm_c57;
-                                    storm_currPos += 2;
+                            if (s0 === oxi_FAILED) {
+                                s0 = oxi_currPos;
+                                if (input.substr(oxi_currPos, 2) === oxi_c57) {
+                                    s1 = oxi_c57;
+                                    oxi_currPos += 2;
                                 } else {
-                                    s1 = storm_FAILED;
-                                    if (storm_silentFails === 0) { storm_fail(storm_c58); }
+                                    s1 = oxi_FAILED;
+                                    if (oxi_silentFails === 0) { oxi_fail(oxi_c58); }
                                 }
-                                if (s1 !== storm_FAILED) {
-                                    storm_reportedPos = s0;
-                                    s1 = storm_c59();
+                                if (s1 !== oxi_FAILED) {
+                                    oxi_reportedPos = s0;
+                                    s1 = oxi_c59();
                                 }
                                 s0 = s1;
-                                if (s0 === storm_FAILED) {
-                                    s0 = storm_currPos;
-                                    if (input.substr(storm_currPos, 2) === storm_c60) {
-                                        s1 = storm_c60;
-                                        storm_currPos += 2;
+                                if (s0 === oxi_FAILED) {
+                                    s0 = oxi_currPos;
+                                    if (input.substr(oxi_currPos, 2) === oxi_c60) {
+                                        s1 = oxi_c60;
+                                        oxi_currPos += 2;
                                     } else {
-                                        s1 = storm_FAILED;
-                                        if (storm_silentFails === 0) { storm_fail(storm_c61); }
+                                        s1 = oxi_FAILED;
+                                        if (oxi_silentFails === 0) { oxi_fail(oxi_c61); }
                                     }
-                                    if (s1 !== storm_FAILED) {
-                                        storm_reportedPos = s0;
-                                        s1 = storm_c62();
+                                    if (s1 !== oxi_FAILED) {
+                                        oxi_reportedPos = s0;
+                                        s1 = oxi_c62();
                                     }
                                     s0 = s1;
-                                    if (s0 === storm_FAILED) {
-                                        s0 = storm_currPos;
-                                        if (input.substr(storm_currPos, 2) === storm_c63) {
-                                            s1 = storm_c63;
-                                            storm_currPos += 2;
+                                    if (s0 === oxi_FAILED) {
+                                        s0 = oxi_currPos;
+                                        if (input.substr(oxi_currPos, 2) === oxi_c63) {
+                                            s1 = oxi_c63;
+                                            oxi_currPos += 2;
                                         } else {
-                                            s1 = storm_FAILED;
-                                            if (storm_silentFails === 0) { storm_fail(storm_c64); }
+                                            s1 = oxi_FAILED;
+                                            if (oxi_silentFails === 0) { oxi_fail(oxi_c64); }
                                         }
-                                        if (s1 !== storm_FAILED) {
-                                            storm_reportedPos = s0;
-                                            s1 = storm_c65();
+                                        if (s1 !== oxi_FAILED) {
+                                            oxi_reportedPos = s0;
+                                            s1 = oxi_c65();
                                         }
                                         s0 = s1;
-                                        if (s0 === storm_FAILED) {
-                                            s0 = storm_currPos;
-                                            if (input.substr(storm_currPos, 2) === storm_c66) {
-                                                s1 = storm_c66;
-                                                storm_currPos += 2;
+                                        if (s0 === oxi_FAILED) {
+                                            s0 = oxi_currPos;
+                                            if (input.substr(oxi_currPos, 2) === oxi_c66) {
+                                                s1 = oxi_c66;
+                                                oxi_currPos += 2;
                                             } else {
-                                                s1 = storm_FAILED;
-                                                if (storm_silentFails === 0) { storm_fail(storm_c67); }
+                                                s1 = oxi_FAILED;
+                                                if (oxi_silentFails === 0) { oxi_fail(oxi_c67); }
                                             }
-                                            if (s1 !== storm_FAILED) {
-                                                storm_reportedPos = s0;
-                                                s1 = storm_c68();
+                                            if (s1 !== oxi_FAILED) {
+                                                oxi_reportedPos = s0;
+                                                s1 = oxi_c68();
                                             }
                                             s0 = s1;
-                                            if (s0 === storm_FAILED) {
-                                                s0 = storm_currPos;
-                                                if (input.substr(storm_currPos, 2) === storm_c69) {
-                                                    s1 = storm_c69;
-                                                    storm_currPos += 2;
+                                            if (s0 === oxi_FAILED) {
+                                                s0 = oxi_currPos;
+                                                if (input.substr(oxi_currPos, 2) === oxi_c69) {
+                                                    s1 = oxi_c69;
+                                                    oxi_currPos += 2;
                                                 } else {
-                                                    s1 = storm_FAILED;
-                                                    if (storm_silentFails === 0) { storm_fail(storm_c70); }
+                                                    s1 = oxi_FAILED;
+                                                    if (oxi_silentFails === 0) { oxi_fail(oxi_c70); }
                                                 }
-                                                if (s1 !== storm_FAILED) {
-                                                    s2 = storm_parsehexDigit();
-                                                    if (s2 !== storm_FAILED) {
-                                                        s3 = storm_parsehexDigit();
-                                                        if (s3 !== storm_FAILED) {
-                                                            s4 = storm_parsehexDigit();
-                                                            if (s4 !== storm_FAILED) {
-                                                                s5 = storm_parsehexDigit();
-                                                                if (s5 !== storm_FAILED) {
-                                                                    storm_reportedPos = s0;
-                                                                    s1 = storm_c71(s2, s3, s4, s5);
+                                                if (s1 !== oxi_FAILED) {
+                                                    s2 = oxi_parsehexDigit();
+                                                    if (s2 !== oxi_FAILED) {
+                                                        s3 = oxi_parsehexDigit();
+                                                        if (s3 !== oxi_FAILED) {
+                                                            s4 = oxi_parsehexDigit();
+                                                            if (s4 !== oxi_FAILED) {
+                                                                s5 = oxi_parsehexDigit();
+                                                                if (s5 !== oxi_FAILED) {
+                                                                    oxi_reportedPos = s0;
+                                                                    s1 = oxi_c71(s2, s3, s4, s5);
                                                                     s0 = s1;
                                                                 } else {
-                                                                    storm_currPos = s0;
-                                                                    s0 = storm_c0;
+                                                                    oxi_currPos = s0;
+                                                                    s0 = oxi_c0;
                                                                 }
                                                             } else {
-                                                                storm_currPos = s0;
-                                                                s0 = storm_c0;
+                                                                oxi_currPos = s0;
+                                                                s0 = oxi_c0;
                                                             }
                                                         } else {
-                                                            storm_currPos = s0;
-                                                            s0 = storm_c0;
+                                                            oxi_currPos = s0;
+                                                            s0 = oxi_c0;
                                                         }
                                                     } else {
-                                                        storm_currPos = s0;
-                                                        s0 = storm_c0;
+                                                        oxi_currPos = s0;
+                                                        s0 = oxi_c0;
                                                     }
                                                 } else {
-                                                    storm_currPos = s0;
-                                                    s0 = storm_c0;
+                                                    oxi_currPos = s0;
+                                                    s0 = oxi_c0;
                                                 }
                                             }
                                         }
@@ -1504,307 +1504,307 @@ var jsonic_parser = (function() {
             return s0;
         }
 
-        function storm_parsekey() {
+        function oxi_parsekey() {
             var s0, s1, s2;
 
-            storm_silentFails++;
-            s0 = storm_parsestring();
-            if (s0 === storm_FAILED) {
-                s0 = storm_parsesingle();
-                if (s0 === storm_FAILED) {
-                    s0 = storm_currPos;
+            oxi_silentFails++;
+            s0 = oxi_parsestring();
+            if (s0 === oxi_FAILED) {
+                s0 = oxi_parsesingle();
+                if (s0 === oxi_FAILED) {
+                    s0 = oxi_currPos;
                     s1 = [];
-                    if (storm_c78.test(input.charAt(storm_currPos))) {
-                        s2 = input.charAt(storm_currPos);
-                        storm_currPos++;
+                    if (oxi_c78.test(input.charAt(oxi_currPos))) {
+                        s2 = input.charAt(oxi_currPos);
+                        oxi_currPos++;
                     } else {
-                        s2 = storm_FAILED;
-                        if (storm_silentFails === 0) { storm_fail(storm_c79); }
+                        s2 = oxi_FAILED;
+                        if (oxi_silentFails === 0) { oxi_fail(oxi_c79); }
                     }
-                    if (s2 !== storm_FAILED) {
-                        while (s2 !== storm_FAILED) {
+                    if (s2 !== oxi_FAILED) {
+                        while (s2 !== oxi_FAILED) {
                             s1.push(s2);
-                            if (storm_c78.test(input.charAt(storm_currPos))) {
-                                s2 = input.charAt(storm_currPos);
-                                storm_currPos++;
+                            if (oxi_c78.test(input.charAt(oxi_currPos))) {
+                                s2 = input.charAt(oxi_currPos);
+                                oxi_currPos++;
                             } else {
-                                s2 = storm_FAILED;
-                                if (storm_silentFails === 0) { storm_fail(storm_c79); }
+                                s2 = oxi_FAILED;
+                                if (oxi_silentFails === 0) { oxi_fail(oxi_c79); }
                             }
                         }
                     } else {
-                        s1 = storm_c0;
+                        s1 = oxi_c0;
                     }
-                    if (s1 !== storm_FAILED) {
-                        storm_reportedPos = s0;
-                        s1 = storm_c80(s1);
+                    if (s1 !== oxi_FAILED) {
+                        oxi_reportedPos = s0;
+                        s1 = oxi_c80(s1);
                     }
                     s0 = s1;
                 }
             }
-            storm_silentFails--;
-            if (s0 === storm_FAILED) {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c77); }
+            oxi_silentFails--;
+            if (s0 === oxi_FAILED) {
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c77); }
             }
 
             return s0;
         }
 
-        function storm_parseliteral() {
+        function oxi_parseliteral() {
             var s0, s1;
 
             s0 = [];
-            s1 = storm_parselitchar();
-            if (s1 !== storm_FAILED) {
-                while (s1 !== storm_FAILED) {
+            s1 = oxi_parselitchar();
+            if (s1 !== oxi_FAILED) {
+                while (s1 !== oxi_FAILED) {
                     s0.push(s1);
-                    s1 = storm_parselitchar();
+                    s1 = oxi_parselitchar();
                 }
             } else {
-                s0 = storm_c0;
+                s0 = oxi_c0;
             }
 
             return s0;
         }
 
-        function storm_parselitchar() {
+        function oxi_parselitchar() {
             var s0;
 
-            if (storm_c81.test(input.charAt(storm_currPos))) {
-                s0 = input.charAt(storm_currPos);
-                storm_currPos++;
+            if (oxi_c81.test(input.charAt(oxi_currPos))) {
+                s0 = input.charAt(oxi_currPos);
+                oxi_currPos++;
             } else {
-                s0 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c82); }
+                s0 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c82); }
             }
 
             return s0;
         }
 
-        function storm_parsenumber() {
+        function oxi_parsenumber() {
             var s0, s1, s2, s3, s4, s5, s6;
 
-            storm_silentFails++;
-            s0 = storm_currPos;
-            s1 = storm_parseint();
-            if (s1 !== storm_FAILED) {
-                s2 = storm_parsefrac();
-                if (s2 !== storm_FAILED) {
-                    s3 = storm_parseexp();
-                    if (s3 !== storm_FAILED) {
-                        s4 = storm_parse_();
-                        if (s4 !== storm_FAILED) {
+            oxi_silentFails++;
+            s0 = oxi_currPos;
+            s1 = oxi_parseint();
+            if (s1 !== oxi_FAILED) {
+                s2 = oxi_parsefrac();
+                if (s2 !== oxi_FAILED) {
+                    s3 = oxi_parseexp();
+                    if (s3 !== oxi_FAILED) {
+                        s4 = oxi_parse_();
+                        if (s4 !== oxi_FAILED) {
                             s5 = [];
-                            s6 = storm_parselitchar();
-                            while (s6 !== storm_FAILED) {
+                            s6 = oxi_parselitchar();
+                            while (s6 !== oxi_FAILED) {
                                 s5.push(s6);
-                                s6 = storm_parselitchar();
+                                s6 = oxi_parselitchar();
                             }
-                            if (s5 !== storm_FAILED) {
-                                storm_reportedPos = s0;
-                                s1 = storm_c84(s1, s2, s3, s5);
+                            if (s5 !== oxi_FAILED) {
+                                oxi_reportedPos = s0;
+                                s1 = oxi_c84(s1, s2, s3, s5);
                                 s0 = s1;
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
-            if (s0 === storm_FAILED) {
-                s0 = storm_currPos;
-                s1 = storm_parseint();
-                if (s1 !== storm_FAILED) {
-                    s2 = storm_parsefrac();
-                    if (s2 !== storm_FAILED) {
-                        s3 = storm_parse_();
-                        if (s3 !== storm_FAILED) {
+            if (s0 === oxi_FAILED) {
+                s0 = oxi_currPos;
+                s1 = oxi_parseint();
+                if (s1 !== oxi_FAILED) {
+                    s2 = oxi_parsefrac();
+                    if (s2 !== oxi_FAILED) {
+                        s3 = oxi_parse_();
+                        if (s3 !== oxi_FAILED) {
                             s4 = [];
-                            s5 = storm_parselitchar();
-                            while (s5 !== storm_FAILED) {
+                            s5 = oxi_parselitchar();
+                            while (s5 !== oxi_FAILED) {
                                 s4.push(s5);
-                                s5 = storm_parselitchar();
+                                s5 = oxi_parselitchar();
                             }
-                            if (s4 !== storm_FAILED) {
-                                storm_reportedPos = s0;
-                                s1 = storm_c85(s1, s2, s4);
+                            if (s4 !== oxi_FAILED) {
+                                oxi_reportedPos = s0;
+                                s1 = oxi_c85(s1, s2, s4);
                                 s0 = s1;
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
-                if (s0 === storm_FAILED) {
-                    s0 = storm_currPos;
-                    s1 = storm_parseint();
-                    if (s1 !== storm_FAILED) {
-                        s2 = storm_parseexp();
-                        if (s2 !== storm_FAILED) {
-                            s3 = storm_parse_();
-                            if (s3 !== storm_FAILED) {
+                if (s0 === oxi_FAILED) {
+                    s0 = oxi_currPos;
+                    s1 = oxi_parseint();
+                    if (s1 !== oxi_FAILED) {
+                        s2 = oxi_parseexp();
+                        if (s2 !== oxi_FAILED) {
+                            s3 = oxi_parse_();
+                            if (s3 !== oxi_FAILED) {
                                 s4 = [];
-                                s5 = storm_parselitchar();
-                                while (s5 !== storm_FAILED) {
+                                s5 = oxi_parselitchar();
+                                while (s5 !== oxi_FAILED) {
                                     s4.push(s5);
-                                    s5 = storm_parselitchar();
+                                    s5 = oxi_parselitchar();
                                 }
-                                if (s4 !== storm_FAILED) {
-                                    storm_reportedPos = s0;
-                                    s1 = storm_c86(s1, s2, s4);
+                                if (s4 !== oxi_FAILED) {
+                                    oxi_reportedPos = s0;
+                                    s1 = oxi_c86(s1, s2, s4);
                                     s0 = s1;
                                 } else {
-                                    storm_currPos = s0;
-                                    s0 = storm_c0;
+                                    oxi_currPos = s0;
+                                    s0 = oxi_c0;
                                 }
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
-                    if (s0 === storm_FAILED) {
-                        s0 = storm_currPos;
-                        s1 = storm_parseint();
-                        if (s1 !== storm_FAILED) {
-                            s2 = storm_parse_();
-                            if (s2 !== storm_FAILED) {
+                    if (s0 === oxi_FAILED) {
+                        s0 = oxi_currPos;
+                        s1 = oxi_parseint();
+                        if (s1 !== oxi_FAILED) {
+                            s2 = oxi_parse_();
+                            if (s2 !== oxi_FAILED) {
                                 s3 = [];
-                                s4 = storm_parselitchar();
-                                while (s4 !== storm_FAILED) {
+                                s4 = oxi_parselitchar();
+                                while (s4 !== oxi_FAILED) {
                                     s3.push(s4);
-                                    s4 = storm_parselitchar();
+                                    s4 = oxi_parselitchar();
                                 }
-                                if (s3 !== storm_FAILED) {
-                                    storm_reportedPos = s0;
-                                    s1 = storm_c87(s1, s3);
+                                if (s3 !== oxi_FAILED) {
+                                    oxi_reportedPos = s0;
+                                    s1 = oxi_c87(s1, s3);
                                     s0 = s1;
                                 } else {
-                                    storm_currPos = s0;
-                                    s0 = storm_c0;
+                                    oxi_currPos = s0;
+                                    s0 = oxi_c0;
                                 }
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     }
                 }
             }
-            storm_silentFails--;
-            if (s0 === storm_FAILED) {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c83); }
+            oxi_silentFails--;
+            if (s0 === oxi_FAILED) {
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c83); }
             }
 
             return s0;
         }
 
-        function storm_parseint() {
+        function oxi_parseint() {
             var s0, s1, s2, s3;
 
-            s0 = storm_currPos;
-            s1 = storm_parsedigit19();
-            if (s1 !== storm_FAILED) {
-                s2 = storm_parsedigits();
-                if (s2 !== storm_FAILED) {
-                    storm_reportedPos = s0;
-                    s1 = storm_c88(s1, s2);
+            s0 = oxi_currPos;
+            s1 = oxi_parsedigit19();
+            if (s1 !== oxi_FAILED) {
+                s2 = oxi_parsedigits();
+                if (s2 !== oxi_FAILED) {
+                    oxi_reportedPos = s0;
+                    s1 = oxi_c88(s1, s2);
                     s0 = s1;
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
-            if (s0 === storm_FAILED) {
-                s0 = storm_parsedigit();
-                if (s0 === storm_FAILED) {
-                    s0 = storm_currPos;
-                    if (input.charCodeAt(storm_currPos) === 45) {
-                        s1 = storm_c89;
-                        storm_currPos++;
+            if (s0 === oxi_FAILED) {
+                s0 = oxi_parsedigit();
+                if (s0 === oxi_FAILED) {
+                    s0 = oxi_currPos;
+                    if (input.charCodeAt(oxi_currPos) === 45) {
+                        s1 = oxi_c89;
+                        oxi_currPos++;
                     } else {
-                        s1 = storm_FAILED;
-                        if (storm_silentFails === 0) { storm_fail(storm_c90); }
+                        s1 = oxi_FAILED;
+                        if (oxi_silentFails === 0) { oxi_fail(oxi_c90); }
                     }
-                    if (s1 !== storm_FAILED) {
-                        s2 = storm_parsedigit19();
-                        if (s2 !== storm_FAILED) {
-                            s3 = storm_parsedigits();
-                            if (s3 !== storm_FAILED) {
-                                storm_reportedPos = s0;
-                                s1 = storm_c91(s2, s3);
+                    if (s1 !== oxi_FAILED) {
+                        s2 = oxi_parsedigit19();
+                        if (s2 !== oxi_FAILED) {
+                            s3 = oxi_parsedigits();
+                            if (s3 !== oxi_FAILED) {
+                                oxi_reportedPos = s0;
+                                s1 = oxi_c91(s2, s3);
                                 s0 = s1;
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     } else {
-                        storm_currPos = s0;
-                        s0 = storm_c0;
+                        oxi_currPos = s0;
+                        s0 = oxi_c0;
                     }
-                    if (s0 === storm_FAILED) {
-                        s0 = storm_currPos;
-                        if (input.charCodeAt(storm_currPos) === 45) {
-                            s1 = storm_c89;
-                            storm_currPos++;
+                    if (s0 === oxi_FAILED) {
+                        s0 = oxi_currPos;
+                        if (input.charCodeAt(oxi_currPos) === 45) {
+                            s1 = oxi_c89;
+                            oxi_currPos++;
                         } else {
-                            s1 = storm_FAILED;
-                            if (storm_silentFails === 0) { storm_fail(storm_c90); }
+                            s1 = oxi_FAILED;
+                            if (oxi_silentFails === 0) { oxi_fail(oxi_c90); }
                         }
-                        if (s1 !== storm_FAILED) {
-                            s2 = storm_parsedigit();
-                            if (s2 !== storm_FAILED) {
-                                storm_reportedPos = s0;
-                                s1 = storm_c92(s2);
+                        if (s1 !== oxi_FAILED) {
+                            s2 = oxi_parsedigit();
+                            if (s2 !== oxi_FAILED) {
+                                oxi_reportedPos = s0;
+                                s1 = oxi_c92(s2);
                                 s0 = s1;
                             } else {
-                                storm_currPos = s0;
-                                s0 = storm_c0;
+                                oxi_currPos = s0;
+                                s0 = oxi_c0;
                             }
                         } else {
-                            storm_currPos = s0;
-                            s0 = storm_c0;
+                            oxi_currPos = s0;
+                            s0 = oxi_c0;
                         }
                     }
                 }
@@ -1813,189 +1813,189 @@ var jsonic_parser = (function() {
             return s0;
         }
 
-        function storm_parsefrac() {
+        function oxi_parsefrac() {
             var s0, s1, s2;
 
-            s0 = storm_currPos;
-            if (input.charCodeAt(storm_currPos) === 46) {
-                s1 = storm_c93;
-                storm_currPos++;
+            s0 = oxi_currPos;
+            if (input.charCodeAt(oxi_currPos) === 46) {
+                s1 = oxi_c93;
+                oxi_currPos++;
             } else {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c94); }
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c94); }
             }
-            if (s1 !== storm_FAILED) {
-                s2 = storm_parsedigits();
-                if (s2 !== storm_FAILED) {
-                    storm_reportedPos = s0;
-                    s1 = storm_c95(s2);
+            if (s1 !== oxi_FAILED) {
+                s2 = oxi_parsedigits();
+                if (s2 !== oxi_FAILED) {
+                    oxi_reportedPos = s0;
+                    s1 = oxi_c95(s2);
                     s0 = s1;
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
 
             return s0;
         }
 
-        function storm_parseexp() {
+        function oxi_parseexp() {
             var s0, s1, s2;
 
-            s0 = storm_currPos;
-            s1 = storm_parsee();
-            if (s1 !== storm_FAILED) {
-                s2 = storm_parsedigits();
-                if (s2 !== storm_FAILED) {
-                    storm_reportedPos = s0;
-                    s1 = storm_c96(s1, s2);
+            s0 = oxi_currPos;
+            s1 = oxi_parsee();
+            if (s1 !== oxi_FAILED) {
+                s2 = oxi_parsedigits();
+                if (s2 !== oxi_FAILED) {
+                    oxi_reportedPos = s0;
+                    s1 = oxi_c96(s1, s2);
                     s0 = s1;
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
 
             return s0;
         }
 
-        function storm_parsedigits() {
+        function oxi_parsedigits() {
             var s0, s1, s2;
 
-            s0 = storm_currPos;
+            s0 = oxi_currPos;
             s1 = [];
-            s2 = storm_parsedigit();
-            if (s2 !== storm_FAILED) {
-                while (s2 !== storm_FAILED) {
+            s2 = oxi_parsedigit();
+            if (s2 !== oxi_FAILED) {
+                while (s2 !== oxi_FAILED) {
                     s1.push(s2);
-                    s2 = storm_parsedigit();
+                    s2 = oxi_parsedigit();
                 }
             } else {
-                s1 = storm_c0;
+                s1 = oxi_c0;
             }
-            if (s1 !== storm_FAILED) {
-                storm_reportedPos = s0;
-                s1 = storm_c97(s1);
+            if (s1 !== oxi_FAILED) {
+                oxi_reportedPos = s0;
+                s1 = oxi_c97(s1);
             }
             s0 = s1;
 
             return s0;
         }
 
-        function storm_parsee() {
+        function oxi_parsee() {
             var s0, s1, s2;
 
-            s0 = storm_currPos;
-            if (storm_c98.test(input.charAt(storm_currPos))) {
-                s1 = input.charAt(storm_currPos);
-                storm_currPos++;
+            s0 = oxi_currPos;
+            if (oxi_c98.test(input.charAt(oxi_currPos))) {
+                s1 = input.charAt(oxi_currPos);
+                oxi_currPos++;
             } else {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c99); }
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c99); }
             }
-            if (s1 !== storm_FAILED) {
-                if (storm_c100.test(input.charAt(storm_currPos))) {
-                    s2 = input.charAt(storm_currPos);
-                    storm_currPos++;
+            if (s1 !== oxi_FAILED) {
+                if (oxi_c100.test(input.charAt(oxi_currPos))) {
+                    s2 = input.charAt(oxi_currPos);
+                    oxi_currPos++;
                 } else {
-                    s2 = storm_FAILED;
-                    if (storm_silentFails === 0) { storm_fail(storm_c101); }
+                    s2 = oxi_FAILED;
+                    if (oxi_silentFails === 0) { oxi_fail(oxi_c101); }
                 }
-                if (s2 === storm_FAILED) {
-                    s2 = storm_c9;
+                if (s2 === oxi_FAILED) {
+                    s2 = oxi_c9;
                 }
-                if (s2 !== storm_FAILED) {
-                    storm_reportedPos = s0;
-                    s1 = storm_c102(s1, s2);
+                if (s2 !== oxi_FAILED) {
+                    oxi_reportedPos = s0;
+                    s1 = oxi_c102(s1, s2);
                     s0 = s1;
                 } else {
-                    storm_currPos = s0;
-                    s0 = storm_c0;
+                    oxi_currPos = s0;
+                    s0 = oxi_c0;
                 }
             } else {
-                storm_currPos = s0;
-                s0 = storm_c0;
+                oxi_currPos = s0;
+                s0 = oxi_c0;
             }
 
             return s0;
         }
 
-        function storm_parsedigit() {
+        function oxi_parsedigit() {
             var s0;
 
-            if (storm_c103.test(input.charAt(storm_currPos))) {
-                s0 = input.charAt(storm_currPos);
-                storm_currPos++;
+            if (oxi_c103.test(input.charAt(oxi_currPos))) {
+                s0 = input.charAt(oxi_currPos);
+                oxi_currPos++;
             } else {
-                s0 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c104); }
+                s0 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c104); }
             }
 
             return s0;
         }
 
-        function storm_parsedigit19() {
+        function oxi_parsedigit19() {
             var s0;
 
-            if (storm_c105.test(input.charAt(storm_currPos))) {
-                s0 = input.charAt(storm_currPos);
-                storm_currPos++;
+            if (oxi_c105.test(input.charAt(oxi_currPos))) {
+                s0 = input.charAt(oxi_currPos);
+                oxi_currPos++;
             } else {
-                s0 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c106); }
+                s0 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c106); }
             }
 
             return s0;
         }
 
-        function storm_parsehexDigit() {
+        function oxi_parsehexDigit() {
             var s0;
 
-            if (storm_c107.test(input.charAt(storm_currPos))) {
-                s0 = input.charAt(storm_currPos);
-                storm_currPos++;
+            if (oxi_c107.test(input.charAt(oxi_currPos))) {
+                s0 = input.charAt(oxi_currPos);
+                oxi_currPos++;
             } else {
-                s0 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c108); }
+                s0 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c108); }
             }
 
             return s0;
         }
 
-        function storm_parse_() {
+        function oxi_parse_() {
             var s0, s1;
 
-            storm_silentFails++;
+            oxi_silentFails++;
             s0 = [];
-            s1 = storm_parsewhitespace();
-            while (s1 !== storm_FAILED) {
+            s1 = oxi_parsewhitespace();
+            while (s1 !== oxi_FAILED) {
                 s0.push(s1);
-                s1 = storm_parsewhitespace();
+                s1 = oxi_parsewhitespace();
             }
-            storm_silentFails--;
-            if (s0 === storm_FAILED) {
-                s1 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c109); }
+            oxi_silentFails--;
+            if (s0 === oxi_FAILED) {
+                s1 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c109); }
             }
 
             return s0;
         }
 
-        function storm_parsewhitespace() {
+        function oxi_parsewhitespace() {
             var s0;
 
-            if (storm_c110.test(input.charAt(storm_currPos))) {
-                s0 = input.charAt(storm_currPos);
-                storm_currPos++;
+            if (oxi_c110.test(input.charAt(oxi_currPos))) {
+                s0 = input.charAt(oxi_currPos);
+                oxi_currPos++;
             } else {
-                s0 = storm_FAILED;
-                if (storm_silentFails === 0) { storm_fail(storm_c111); }
+                s0 = oxi_FAILED;
+                if (oxi_silentFails === 0) { oxi_fail(oxi_c111); }
             }
 
             return s0;
@@ -2015,16 +2015,16 @@ var jsonic_parser = (function() {
         }
 
 
-        storm_result = storm_startRuleFunction();
+        oxi_result = oxi_startRuleFunction();
 
-        if (storm_result !== storm_FAILED && storm_currPos === input.length) {
-            return storm_result;
+        if (oxi_result !== oxi_FAILED && oxi_currPos === input.length) {
+            return oxi_result;
         } else {
-            if (storm_result !== storm_FAILED && storm_currPos < input.length) {
-                storm_fail({ type: "end", description: "end of input" });
+            if (oxi_result !== oxi_FAILED && oxi_currPos < input.length) {
+                oxi_fail({ type: "end", description: "end of input" });
             }
 
-            throw storm_buildException(null, storm_maxFailExpected, storm_maxFailPos);
+            throw oxi_buildException(null, oxi_maxFailExpected, oxi_maxFailPos);
         }
     }
 
