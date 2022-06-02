@@ -1,5 +1,11 @@
 import { uuid, typeOf } from "../Utils/index.js";
 
+/**
+ * create a object from template literal
+ * @param {Array} parts 
+ * @param  {...any} args 
+ * @returns {Object}
+ */
 function html(parts, ...args) {
     const template = parts.reduce(
         (acc, part, i) => {

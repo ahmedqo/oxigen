@@ -1,9 +1,18 @@
 import { isAbsent, isFunction, isPresent, kebabCase } from "../Types/index.js";
 
+/**
+ * get the type of provided object
+ * @param {Any} v 
+ * @returns {String}
+ */
 function type(v) {
     return Object.prototype.toString.call(v).slice(8).slice(0, -1).toLowerCase();
 }
 
+/**
+ * define elements
+ * @param  {...Class|Array} el 
+ */
 function define(...el) {
     el.forEach(e => {
         var _name, _class;
@@ -19,12 +28,24 @@ function define(...el) {
     })
 }
 
+/**
+ * check if provided value exists
+ * @param {Any} value 
+ * @returns {Boolean}
+ */
 function exist(value) {
     return isPresent(value) ?
-        value :
-        null;
+        true :
+        false;
 }
 
+/**
+ * return the case of provided value
+ * @param {String} value 
+ * @param {Object} cases 
+ * @param {Any} any 
+ * @returns 
+ */
 function choose(value, cases, any) {
     for (const c in cases) {
         if (c === value) {
@@ -35,10 +56,22 @@ function choose(value, cases, any) {
     return isFunction(any) ? any() : any;
 }
 
+/**
+ * like if statment
+ * @param {Any} condition 
+ * @param {Any} trueCase 
+ * @param {Any} falseCase 
+ * @returns {Any}
+ */
 function when(condition, trueCase, falseCase) {
     return condition ? (isFunction(trueCase) ? trueCase() : trueCase) : isFunction(falseCase) ? falseCase() : falseCase || null;
 }
 
+/**
+ * join array 
+ * @param {Array} items 
+ * @param {Function|String} joiner 
+ */
 function* join(items, joiner) {
     if (items !== undefined) {
         let i = -1;
@@ -52,6 +85,11 @@ function* join(items, joiner) {
     }
 }
 
+/**
+ * loop true array
+ * @param {Array} items 
+ * @param {Function} callback 
+ */
 function* each(items, callback) {
     if (items !== undefined) {
         let i = 0;
@@ -61,6 +99,12 @@ function* each(items, callback) {
     }
 }
 
+/**
+ * create agenerator range
+ * @param {Number} startOrEnd 
+ * @param {Number} end 
+ * @param {Number} step 
+ */
 function* range(startOrEnd, end, step = 1) {
     const start = isAbsent(end) ? 0 : startOrEnd;
     end = isPresent(end) ? end : startOrEnd;

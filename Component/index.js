@@ -3,6 +3,12 @@ import { define as def } from "../Helpers/index.js";
 import { attributes } from "../Utils/index.js";
 import exec from "../Maker/index.js";
 
+/**
+ * make a proxy from provided object
+ * @param {Object} object 
+ * @param {Function} onChange 
+ * @returns {Proxy}
+ */
 function onChange(object, onChange) {
     const handler = {
         get(target, property, receiver) {
@@ -32,6 +38,12 @@ function onChange(object, onChange) {
     return new Proxy(object, handler);
 }
 
+/**
+ * create a custom component
+ * @param {Object} param0 
+ * @param {Class} Class 
+ * @returns {Class}
+ */
 function Component({
     mode = "closed",
     define = [],
@@ -53,11 +65,18 @@ function Component({
             return taged;
         }
 
+        /**
+         * define the element
+         * @param {Array|String} name 
+         */
         static define(name) {
             if (name) def([this, name])
             else def(this);
         }
 
+        /**
+         * constructor of element runs all nessisery fns
+         */
         constructor() {
             super();
 
@@ -88,6 +107,12 @@ function Component({
             this.setup.created();
         }
 
+        /**
+         * set the attribute when its change's
+         * @param {String} name 
+         * @param {String} oldValue 
+         * @param {String} newValue 
+         */
         attributeChangedCallback(name, oldValue, newValue) {
             var _name = camelCase(name);
             if (_name in this.attrs) {
@@ -97,6 +122,11 @@ function Component({
             }
         }
 
+        /**
+         * set the attribute 
+         * define the elemts
+         * frist render 
+         */
         connectedCallback() {
             for (var attr in this.attrs) {
                 var name = kebabCase(attr);
@@ -108,6 +138,9 @@ function Component({
             this.setup.mounted();
         }
 
+        /**
+         * called when element removed
+         */
         disconnectedCallback() {
             this.setup.removed();
         }
@@ -116,6 +149,12 @@ function Component({
             this.setup.adopted();
         }
 
+        /**
+         * create a custom event
+         * @param {String} name 
+         * @param {Object|null} data 
+         * @param {Function} fn 
+         */
         emit(name, data, fn) {
             const ev = new CustomEvent(name, {
                 bubbles: true,
@@ -131,6 +170,9 @@ function Component({
             }
         }
 
+        /**
+         * init the element attribute on creation
+         */
         __initAttrs__() {
             Object.keys(attrs).forEach((key) => {
                 this.__attrsType__[key] = attrs[key].type;
@@ -144,6 +186,9 @@ function Component({
             });
         }
 
+        /**
+         * init the element propreties on creation
+         */
         __initProps__() {
             Object.keys(props).forEach((key) => {
                 this.__propsType__[key] = props[key].type;
@@ -166,6 +211,9 @@ function Component({
             });
         }
 
+        /**
+         * init the element state on creation
+         */
         __initState__() {
             Object.keys(state).forEach((key) => {
                 this.__stateType__[key] = state[key].type;
@@ -179,6 +227,9 @@ function Component({
             });
         }
 
+        /**
+         * init the element logic on creation
+         */
         __initLogic__() {
             Object.keys(logic).map((a) => {
                 const boundAction = logic[a].bind(this);
@@ -192,6 +243,9 @@ function Component({
             });
         }
 
+        /**
+         * init the element setup on creation
+         */
         __initSetup__() {
             var _setup = {
                 created() {},
@@ -207,6 +261,9 @@ function Component({
             });
         }
 
+        /**
+         * update the attributes
+         */
         __updateAttrs__() {
             const attrs = attributes(this);
             for (const attr in attrs) {
@@ -225,6 +282,9 @@ function Component({
             }
         }
 
+        /**
+         * create the refs object
+         */
         __refs__() {
             var ids = [];
             Array.from(this.__root__.querySelectorAll("*"))
@@ -242,6 +302,9 @@ function Component({
             });
         }
 
+        /**
+         * render the elemnt view
+         */
         async __render__() {
             this.__updateAttrs__();
             const template = await this.render();
