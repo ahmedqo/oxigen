@@ -16,7 +16,7 @@ With `oxigen`  you can create your own custom html elemnt
 			}
 		},
 	    styles() {
-	        return sass /*css*/ `
+	        return sass\`
 	            *, :host {
 	                box-sizing: border-box;
 	                font-family: Arial, sans-serif;
@@ -29,12 +29,12 @@ With `oxigen`  you can create your own custom html elemnt
 	            h1 {
 					font-size: 2rem;
 				}
-	        `;
+	        \`;
 	    },
 	    render() {
-	        return html`
+	        return html\`
 	            <h1>${this.title}</h1>
-	        `;
+	        \`;
 	    },
 	});
 	
