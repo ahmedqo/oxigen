@@ -129,9 +129,11 @@ function addProps(node, obj, props, events) {
             continue;
         }
 
-        var val = obj[attr];
+        var name = attr,
+            val = obj[attr];
         if (isVar(val)) val = props[val];
-        node.setAttribute(kebabCase(attr), val);
+        if (!["viewBox"].includes(attr)) name = kebabCase(attr);
+        node.setAttribute(name, val);
     }
 }
 
