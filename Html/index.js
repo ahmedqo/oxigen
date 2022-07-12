@@ -29,7 +29,7 @@ function html(parts, ...args) {
                 };
             }
 
-            if (type(arg) === "component") {
+            if (typeOf(arg) === "component") {
                 const id = uuid();
                 if (!("__archive__" in arg)) arg.__archive__ = {};
                 return {
@@ -40,7 +40,7 @@ function html(parts, ...args) {
                 };
             }
 
-            if (type(arg) === "function") {
+            if (typeOf(arg) === "function") {
                 const id = uuid();
                 return {
                     components: acc.components,
@@ -50,7 +50,7 @@ function html(parts, ...args) {
                 };
             }
 
-            if (type(arg) === "array") {
+            if (typeOf(arg) === "array") {
                 var allComponents = arg.reduce((acc, a) => {
                     return {...acc, ...a.components };
                 }, {});
@@ -77,7 +77,7 @@ function html(parts, ...args) {
                 };
             }
 
-            if (type(arg) === "object") {
+            if (typeOf(arg) === "object") {
                 var allComponents = arg.components || {},
                     allEvents = arg.events || {},
                     allProps = arg.props || {};
@@ -99,7 +99,7 @@ function html(parts, ...args) {
                 };
             }
 
-            if (type(arg) === "generator") {
+            if (typeOf(arg) === "generator") {
                 for (var obj of arg) {
                     acc = {
                         components: {...acc.components, ...obj.components },
