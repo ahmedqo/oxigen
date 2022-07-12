@@ -1,4 +1,4 @@
-import { camelCase, kebabCase, typeCase, isPresent, isBoolean } from "../Types/index.js";
+import { camelCase, kebabCase, typeCase, isPresent, isFunction } from "../Types/index.js";
 import { define as def } from "../Helpers/index.js";
 import { attributes } from "../Utils/index.js";
 import exec from "../Maker/index.js";
@@ -6,10 +6,10 @@ import exec from "../Maker/index.js";
 /**
  * make a proxy from provided object
  * @param {Object} object 
- * @param {Function} onChange 
+ * @param {Function} callback 
  * @returns {Proxy}
  */
-function onChange(object, onChange) {
+function onChange(object, callback, types) {
     const handler = {
         get(target, property, receiver) {
             const desc = Object.getOwnPropertyDescriptor(target, property);
@@ -26,12 +26,14 @@ function onChange(object, onChange) {
         },
 
         defineProperty(target, property, descriptor) {
-            onChange(descriptor);
+            var type = types[property];
+            descriptor = { value: typeCase(type)(descriptor.value) }
+            callback(property, descriptor.value);
             return Reflect.defineProperty(target, property, descriptor);
         },
 
         deleteProperty(target, property) {
-            onChange();
+            callback();
             return Reflect.deleteProperty(target, property);
         },
     };
@@ -71,7 +73,8 @@ function Component({
          */
         static define(name) {
             if (name) def([this, name])
-            else def(this);
+            else def(this) && (name = this.taged);
+            return document.createElement(name)
         }
 
         /**
@@ -91,7 +94,9 @@ function Component({
             this.props = {};
             this.state = {};
             this.logic = {};
-            this.setup = {};
+            this.setup = {
+                changed: {}
+            };
             this.refs = {};
 
             this.__root__ = this.attachShadow({
@@ -110,15 +115,14 @@ function Component({
         /**
          * set the attribute when its change's
          * @param {String} name 
-         * @param {String} oldValue 
+         * @param {String} _ 
          * @param {String} newValue 
          */
-        attributeChangedCallback(name, oldValue, newValue) {
+        attributeChangedCallback(name, _, value) {
             var _name = camelCase(name);
-            if (_name in this.attrs) {
-                var _type = this.__attrsType__[_name];
-                this.attrs[_name] = typeCase(_type)(newValue);
-                this.setup.changed(name, typeCase(_type)(oldValue), typeCase(_type)(newValue));
+            var _type = this.__attrsType__[name];
+            if (_name in this.attrs && this.attrs[_name] !== typeCase(_type)(value)) {
+                this.attrs[_name] = (value);
             }
         }
 
@@ -130,8 +134,7 @@ function Component({
         connectedCallback() {
             for (var attr in this.attrs) {
                 var name = kebabCase(attr);
-                var valu = typeCase(this.__attrsType__[attr])(this.attrs[attr]);
-                if (isPresent(valu)) this.setAttribute(name, valu);
+                if (isPresent(this.attrs[attr])) this.setAttribute(name, this.attrs[attr]);
             }
             def(...define);
             this.__render__();
@@ -179,11 +182,12 @@ function Component({
                 this.attrs[key] = typeCase(this.__attrsType__[key])(attrs[key].value);
             });
 
-            this.attrs = onChange(this.attrs, () => {
+            this.attrs = onChange(this.attrs, (name, value) => {
                 setTimeout(() => {
                     this.__render__();
+                    this.setup.changed.attrs(name, value);
                 }, 0);
-            });
+            }, this.__attrsType__);
         }
 
         /**
@@ -193,6 +197,7 @@ function Component({
             Object.keys(props).forEach((key) => {
                 this.__propsType__[key] = props[key].type;
                 this.props[key] = typeCase(this.__propsType__[key])(props[key].value);
+
                 Object.defineProperty(this, key, {
                     set(val) {
                         this.props[key] = typeCase(this.__propsType__[key])(val);
@@ -204,11 +209,12 @@ function Component({
                 })
             });
 
-            this.props = onChange(this.props, () => {
+            this.props = onChange(this.props, (name, value) => {
                 setTimeout(() => {
                     this.__render__();
+                    this.setup.changed.props(name, value);
                 }, 0);
-            });
+            }, this.__propsType__);
         }
 
         /**
@@ -220,11 +226,12 @@ function Component({
                 this.state[key] = typeCase(this.__stateType__[key])(state[key].value);
             });
 
-            this.state = onChange(this.state, () => {
+            this.state = onChange(this.state, (name, value) => {
                 setTimeout(() => {
                     this.__render__();
+                    this.setup.changed.state(name, value);
                 }, 0);
-            });
+            }, this.__stateType__);
         }
 
         /**
@@ -251,13 +258,22 @@ function Component({
                 created() {},
                 mounted() {},
                 adopted() {},
-                changed() {},
                 updated() {},
                 removed() {},
-                ...setup
+                ...setup,
+                changed: {
+                    attrs() {},
+                    props() {},
+                    state() {},
+                    ...(setup.changed || {})
+                }
             }
             Object.keys(_setup).map((a) => {
-                this.setup[a] = _setup[a].bind(this);
+                if (isFunction(_setup[a])) this.setup[a] = _setup[a].bind(this);
+            });
+
+            Object.keys(_setup.changed).map((a) => {
+                if (isFunction(_setup.changed[a])) this.setup.changed[a] = _setup.changed[a].bind(this);
             });
         }
 

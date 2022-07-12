@@ -24,6 +24,7 @@ function getTag(tag) {
             return {
                 type: "comment",
                 comment: endIndex !== -1 ? tag.slice(4, endIndex) : "",
+
             };
         }
     }
@@ -55,7 +56,6 @@ function getTag(tag) {
             res.attrs[result[2]] = result[3].trim().substring(1, result[3].length - 1);
         }
     }
-
     return res;
 }
 

@@ -1,4 +1,4 @@
-import { isAbsent, isFunction, isPresent, kebabCase } from "../Types/index.js";
+import { isAbsent, isFunction, isPresent } from "../Types/index.js";
 
 /**
  * get the type of provided object

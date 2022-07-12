@@ -29,10 +29,9 @@ function html(parts, ...args) {
                 };
             }
 
-            if (typeOf(arg) === "component") {
+            if (type(arg) === "component") {
                 const id = uuid();
-                if (!("__archive__" in arg))
-                    arg.__archive__ = {}
+                if (!("__archive__" in arg)) arg.__archive__ = {};
                 return {
                     components: {...acc.components, [id]: arg },
                     events: acc.events,
@@ -41,7 +40,7 @@ function html(parts, ...args) {
                 };
             }
 
-            if (typeOf(arg) === "function") {
+            if (type(arg) === "function") {
                 const id = uuid();
                 return {
                     components: acc.components,
@@ -51,7 +50,7 @@ function html(parts, ...args) {
                 };
             }
 
-            if (typeOf(arg) === "array") {
+            if (type(arg) === "array") {
                 var allComponents = arg.reduce((acc, a) => {
                     return {...acc, ...a.components };
                 }, {});
@@ -78,7 +77,7 @@ function html(parts, ...args) {
                 };
             }
 
-            if (typeOf(arg) === "object") {
+            if (type(arg) === "object") {
                 var allComponents = arg.components || {},
                     allEvents = arg.events || {},
                     allProps = arg.props || {};
@@ -100,14 +99,14 @@ function html(parts, ...args) {
                 };
             }
 
-            if (typeOf(arg) === "generator") {
+            if (type(arg) === "generator") {
                 for (var obj of arg) {
                     acc = {
                         components: {...acc.components, ...obj.components },
                         events: {...acc.events, ...obj.events },
                         string: acc.string + obj.string,
                         props: {...acc.props, ...obj.props },
-                    }
+                    };
                 }
 
                 return {
