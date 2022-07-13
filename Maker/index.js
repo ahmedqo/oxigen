@@ -122,7 +122,7 @@ function addProps(node, obj, props, events) {
 
         if (isProp && !svg.includes(node.tagName.toLowerCase())) {
             var val = obj[attr];
-            if (isVar(val)) val = props[val];
+            if (isVar(val)) val = props[val] || events[val];
             if (!val.length && typeof node[attr] === "boolean")
                 val = true;
             node[attr] = node.__archive__[attr] = val;
