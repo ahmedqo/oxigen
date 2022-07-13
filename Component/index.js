@@ -313,7 +313,7 @@ function Component({
                 });
             ids.forEach((e) => {
                 var id = Array.from(this.__root__.querySelectorAll("[ref='" + e + "']"));
-                this.refs[e] = (id.length > 1) ? id : id[0];
+                this.refs[camelCase(e)] = (id.length > 1) ? id : id[0];
                 id.forEach((e) => e.removeAttribute("ref"));
             });
         }
