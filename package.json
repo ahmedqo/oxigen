@@ -1,6 +1,6 @@
 {
     "name": "oxigen-core",
-    "version": "1.0.10",
+    "version": "1.0.20",
     "description": "components base framework",
     "main": "index.js",
     "type": "module",
