@@ -186,9 +186,7 @@ function Parser(str, selector, parent, context, _id) {
     result._medias = []; // Medias
     result._mixins = parent !== undefined ? parent._mixins : {}; // Variables
     result.parent = parent;
-    result.selector = selector && [...selector.split(",")].map(el => {
-        return el.trim() === "@self" ? result.class : result.class + " " + el.trim();
-    }).join(",");;
+    result.selector = selector;
 
 
     result.getString = function() {
@@ -285,7 +283,12 @@ function Stringifier(scssTree) {
         if (scssTree.selector !== null && scssTree.selector !== undefined && scssTree.selector !== "") {
             var data = LoopProperties(scssTree);
             if (data.length) {
-                str += Selector(scssTree) + "{";
+                var sel = Selector(scssTree);
+                sel = sel.split(",").map(el => {
+                    if(sel.includes("@self")) return el.replaceAll("@self", scssTree.class)
+                    else return scssTree.class + " " + el
+                }).join(",");
+                str += sel + "{";
                 str += data;
                 str += "}";
             }

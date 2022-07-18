@@ -329,8 +329,10 @@ function Component({
         async __render__() {
             this.__updateAttrs__();
             const template = await this.render();
+		if (template) {
 		if (this.__css__) {
-			document.querySelector("[oxi-id='" + this.__css__ + "']").remove();
+			 const el = document.querySelector("[oxi-id='" + this.__css__ + "']")
+                    el && el.remove();
 			this.classList.remove(this.__css__);
 		}		
                 this.__css__ = await this.styles();
@@ -341,6 +343,7 @@ function Component({
                 const props = template.props;
                 exec(this, temp, props, events, components);
                 this.__refs__();
+}
             this.setup.updated();
         }
     }
