@@ -103,6 +103,10 @@ function Component({
                 mode
             });
 
+	    const slot = document.createElement("slot");
+            this.__root__.append(slot);
+          
+
             this.__initAttrs__();
             this.__initProps__();
             this.__initState__();
@@ -145,6 +149,7 @@ function Component({
          * called when element removed
          */
         disconnectedCallback() {
+            if (this.__css__) document.querySelector("[oxi-id='" + this.__css__ + "']").remove();
             this.setup.removed();
         }
 
@@ -303,7 +308,7 @@ function Component({
          */
         __refs__() {
             var ids = [];
-            Array.from(this.__root__.querySelectorAll("*"))
+            Array.from(this.querySelectorAll("*"))
                 .forEach((e) => {
                     if (e.hasAttribute("ref")) {
                         var ref = e.getAttribute("ref");
@@ -312,7 +317,7 @@ function Component({
                     }
                 });
             ids.forEach((e) => {
-                var id = Array.from(this.__root__.querySelectorAll("[ref='" + e + "']"));
+                var id = Array.from(this.querySelectorAll("[ref='" + e + "']"));
                 this.refs[camelCase(e)] = (id.length > 1) ? id : id[0];
                 id.forEach((e) => e.removeAttribute("ref"));
             });
@@ -324,16 +329,18 @@ function Component({
         async __render__() {
             this.__updateAttrs__();
             const template = await this.render();
-            if (template) {
-                var style = await this.styles();
-                style = style ? `<style>${style}</style>` : "";
-                const temp = style + template.string;
+		if (this.__css__) {
+			document.querySelector("[oxi-id='" + this.__css__ + "']").remove();
+			this.classList.remove(this.__css__);
+		}		
+                this.__css__ = await this.styles();
+                this.classList.add(this.__css__);
+                const temp = template.string;
                 const components = template.components;
                 const events = template.events;
                 const props = template.props;
-                exec(this.__root__, temp, props, events, components);
+                exec(this, temp, props, events, components);
                 this.__refs__();
-            }
             this.setup.updated();
         }
     }

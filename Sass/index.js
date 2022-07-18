@@ -104,7 +104,7 @@ var Variable = function(str) {
 Variable.prototype.parse = function(str) {
     var _property = str.split(":");
     var key = _property[0].trim().slice(1); // Remove $ Sign
-    var value = _property[1].trim();
+    var value = _property.slice(1).join(":").trim();
     return {
         key: key,
         value: value,
@@ -177,15 +177,19 @@ Comment.prototype.getString = function() {
     return "/*" + this.str + "*/";
 };
 
-function Parser(str, selector, parent, context) {
+function Parser(str, selector, parent, context, _id) {
     var result = {};
+    result.class = _id;
     result.isTree = true;
     result.properties = []; // .hello { font-size: 12px; }
     result._context = parent !== undefined ? parent._context : {}; // Variables
     result._medias = []; // Medias
     result._mixins = parent !== undefined ? parent._mixins : {}; // Variables
     result.parent = parent;
-    result.selector = selector;
+    result.selector = selector && [...selector.split(",")].map(el => {
+        return el.trim() === "@self" ? result.class : result.class + " " + el.trim();
+    }).join(",");;
+
 
     result.getString = function() {
         return Stringifier(result);
@@ -223,7 +227,7 @@ function Parser(str, selector, parent, context) {
                     var propertyName = getInclude(curr_property);
                     if (result._mixins[propertyName] !== undefined) {
                         var mixin = result._mixins[propertyName];
-                        result.properties.push(Parser(mixin, " ", result));
+                        result.properties.push(Parser(mixin, " ", result, undefined, result.class));
                     }
                 } else if (isVariable(curr_property)) {
                     var variable = new Variable(curr_property);
@@ -254,7 +258,7 @@ function Parser(str, selector, parent, context) {
                         } else if (isMedia(property_name)) {
                             addMedia(property_name, curr_block, result);
                         } else {
-                            result.properties.push(Parser(curr_block, property_name, result));
+                            result.properties.push(Parser(curr_block, property_name, result, undefined, result.class));
                         }
                     }
                     curr_block = "";
@@ -290,7 +294,7 @@ function Stringifier(scssTree) {
     str += LoopTrees(scssTree);
     if (scssTree._medias.length > 0) {
         for (const m of scssTree._medias) {
-            str += "@media(" + m.condition + "){" + Parser(m.block, undefined, scssTree).getString() + "}";
+            str += "@media(" + m.condition + "){" + Parser(m.block, undefined, scssTree, undefined, scssTree.class).getString() + "}";
         }
     }
     return str;
@@ -322,7 +326,19 @@ function sass(parts, ...args) {
             });
             return acc + part + (args[i] || "");
         }, "");
-    return Parser(sass).getString() + key;
+
+    [{ key: "@media-sm", val: "min-width:640px" }, { key: "@media-md", val: "min-width:768px" }, { key: "@media-lg", val: "min-width:1024px" }, { key: "@media-xl", val: "min-width:1280px" }].forEach(e => {
+        sass = sass.replaceAll(e.key, `@media(${e.val})`)
+    })
+
+    const clas = uuid()
+    const css = Parser(sass, undefined, undefined, undefined, "." + clas).getString() + key;
+    const style = document.createElement("style");
+    const txt = document.createTextNode(css);
+    style.setAttribute("oxi-id", clas);
+    style.append(txt)
+    document.head.append(style);
+    return clas;
 }
 
 function keyframes(parts, ...args) {
